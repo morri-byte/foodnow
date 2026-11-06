@@ -34,11 +34,13 @@ for rid, idx in sel.items():
         except Exception as e: print("  fejl", rid, u[:60], e, flush=True); time.sleep(3)
     if not data: continue
     im = ImageOps.exif_transpose(Image.open(io.BytesIO(data))).convert("RGB")
-    im = ImageOps.fit(im, (960, 720), Image.LANCZOS, centering=(0.5, 0.5))
+    nd = c["license"] == "by-nd"   # NoDerivatives: kun nedskalering, ingen beskæring
+    if nd: im.thumbnail((960, 960), Image.LANCZOS)
+    else: im = ImageOps.fit(im, (960, 720), Image.LANCZOS, centering=(0.5, 0.5))
     im.save(path, "JPEG", quality=76, optimize=True, progressive=True)
     lic = (LIC.get(c["license"], c["license"].upper()) + " " + (c.get("license_version") or "")).strip()
     meta[rid] = {"f": f"billeder/{rid}.jpg", "id": c["id"], "title": c.get("title"), "by": c.get("creator"),
-                 "lic": lic, "licUrl": c.get("license_url"), "src": c.get("foreign_landing_url"), "mod": True}
+                 "lic": lic, "licUrl": c.get("license_url"), "src": c.get("foreign_landing_url"), "mod": not nd}
     open(JS, "w").write("/* Fotos via Openverse (Wikimedia Commons / Flickr), CC-licenser – se Billedkreditter i appen */\nwindow.FN_IMG = " + json.dumps(meta, ensure_ascii=False, indent=0) + ";\n")
     print("ok", rid, os.path.getsize(path) // 1024, "KB", flush=True); time.sleep(2)
 print("FÆRDIG", len(meta))
