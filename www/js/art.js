@@ -100,7 +100,7 @@
 
   window.dishArt = function(r, opts){
     opts = opts||{};
-    if (r.img) return `<img src="${r.img}" alt="" loading="lazy" class="dishImg">`;
+    if (r.img) return `<img src="${r.img}" alt="Foto af ${r.n.replace(/"/g,'')}" loading="lazy" decoding="async" class="dishImg">`;
     const id = 'a'+(uid++);
     const [style, cols] = (r.look||'plate:#c9853f,#f2e4bf,#5c9a46').split(':');
     const c = cols.split(',');

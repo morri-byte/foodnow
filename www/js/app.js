@@ -3,6 +3,9 @@
    ============================================================ */
 'use strict';
 const R = window.FN;                       // alle 140 retter
+/* rigtige fotos (data/billeder.js) – falder tilbage til tegning hvis et foto mangler */
+const IMG = window.FN_IMG || {};
+R.forEach(r => { if (IMG[r.id]) r.img = IMG[r.id].f; });
 const BYID = Object.fromEntries(R.map(r => [r.id, r]));
 const BASE = 4;                            // opskrifterne er skrevet til 4 personer
 const TOP10 = ['stegt-flaesk','frikadeller','spaghetti-bolognese','flaeskesteg','lasagne','pizza','boller-i-karry','smoerrebroed','sprode-kyllingelaar','hakkeboef'];
@@ -317,6 +320,7 @@ function renderDetail(){
       <div><button class="roundBtn" onclick="shareDish()" aria-label="Del opskrift">📤</button>
       <button class="roundBtn" id="dFav" onclick="toggleFav('${r.id}',this);renderDetail()" aria-label="${fav?'Fjern fra':'Gem i'} favoritter">${fav?'❤️':'🤍'}</button></div></div></div>
   <div class="dSheet">
+    ${IMG[r.id]?`<p class="credit">📷 Foto: ${esc(IMG[r.id].by||'ukendt')} · ${esc(IMG[r.id].lic)} · <a href="${esc(IMG[r.id].src)}" target="_blank" rel="noopener">kilde</a>${IMG[r.id].mod?' · beskåret':''}</p>`:''}
     <h1>${esc(r.n)}</h1>
     <p class="dDesc">${esc(r.d)}</p>
     <div class="badges">${badges}</div>
@@ -393,8 +397,14 @@ function openSettings(){
   <p class="count">Standard antal personer</p>
   <div class="servings" style="margin-top:0"><span class="lbl"><b>👥 ${S.defServ} personer</b><small>Bruges når du åbner en ny opskrift</small></span>
     <span class="stepper"><button onclick="setDef(-1)" ${S.defServ<=1?'disabled':''} aria-label="Færre">−</button><output>${S.defServ}</output><button onclick="setDef(1)" ${S.defServ>=12?'disabled':''} aria-label="Flere">+</button></span></div>
+  <div class="sheetList"><button onclick="openCredits()">📷 Billedkreditter<small>${Object.keys(IMG).length} fotos</small></button></div>
   <p class="about"><b>FoodNow</b> · version 1.0<br>140 opskrifter skrevet til FoodNow: 80 danske favoritter, 30 salater og 30 veganske retter.
   Kalorier er vejledende skøn. Dine favoritter, ugeplan og indkøbsliste gemmes kun på din egen telefon – vi indsamler ingen data.<br><br>Nyd alkohol med måde. Vinforslag er inspiration til voksne.</p>`);
+}
+function openCredits(){
+  const l = R.filter(r=>IMG[r.id]);
+  openSheet(`<h2>📷 Billedkreditter</h2><p class="about" style="margin-top:0">Fotos er hentet via Openverse fra Wikimedia Commons og Flickr under Creative Commons-licenser, der tillader kommerciel brug. Billederne er beskåret og nedskaleret til appen. Tak til fotograferne!</p>
+  <div class="credits">${l.map(r=>`<p><b>${esc(r.n)}</b><br>${esc(IMG[r.id].title||'')} – ${esc(IMG[r.id].by||'ukendt')} · <a href="${esc(IMG[r.id].licUrl||'#')}" target="_blank" rel="noopener">${esc(IMG[r.id].lic)}</a> · <a href="${esc(IMG[r.id].src)}" target="_blank" rel="noopener">kilde</a></p>`).join('')}</div>`);
 }
 function setDef(d){ S.defServ=Math.min(12,Math.max(1,(S.defServ||4)+d)); save(); haptic(); openSettings(); }
 
