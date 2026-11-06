@@ -1,0 +1,10 @@
+{
+  "appId": "dk.foodnow.app",
+  "appName": "FoodNow",
+  "webDir": "www",
+  "ios": { "contentInset": "never", "backgroundColor": "#faf7f2" },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 700, "backgroundColor": "#faf7f2", "showSpinner": false },
+    "StatusBar": { "style": "LIGHT", "overlaysWebView": true }
+  }
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#faf7f2" id="themeColor">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="FoodNow – Danmarks yndlingsretter, salater og veganske retter med ugeplan, indkøbsliste og vinforslag.">
+<title>FoodNow</title>
+<script>
+try{var m=localStorage.getItem('foodnow_theme')||'auto';document.documentElement.dataset.theme=m==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;}catch(e){}
+</script>
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- ============ OPDAG ============ -->
+<section id="home" class="screen active" aria-label="Opdag">
+  <div class="topbar">
+    <div class="logo">food<b>now</b><i></i></div>
+    <button class="roundBtn" onclick="openSettings()" aria-label="Indstillinger">⚙️</button>
+  </div>
+  <p class="greet" id="greet"></p>
+  <h1 class="bigTitle">Hvad skal vi have i aften?</h1>
+  <button class="search" onclick="openSearch()" aria-label="Søg i alle retter">🔍 <span>Søg i 140 retter, fx "kylling" eller "laks"</span></button>
+  <div id="homeBody"></div>
+</section>
+
+<!-- ============ LISTER (retter / salater / vegansk / søg / favoritter) ============ -->
+<section id="list" class="screen" aria-label="Retter">
+  <div class="topbar" id="listTop"></div>
+  <h1 class="bigTitle" id="listTitle"></h1>
+  <p class="subTitle" id="listSub"></p>
+  <label class="search"><span>🔍</span><input id="listSearch" type="search" placeholder="Søg" autocomplete="off" oninput="onListSearch(this.value)"><button class="clear hidden" id="listClear" onclick="clearListSearch()" aria-label="Ryd søgning">✕</button></label>
+  <div class="chips" id="listChips"></div>
+  <p class="count" id="listCount"></p>
+  <div class="grid" id="listGrid"></div>
+</section>
+
+<!-- ============ DETALJE ============ -->
+<section id="detail" class="screen" aria-label="Opskrift"></section>
+
+<!-- ============ KOKKETILSTAND ============ -->
+<section id="cook" class="screen" aria-label="Madlavning">
+  <div class="cookTop"><button class="roundBtn" onclick="exitCook()" aria-label="Afslut madlavning">✕</button><span id="cookTitle"></span></div>
+  <div class="progress" id="progress"></div>
+  <p class="cookStep" id="cookStep"></p>
+  <div id="timerBox"></div>
+  <div class="navRow">
+    <button id="prevBtn" onclick="cookStep(-1)">Forrige</button>
+    <button id="nextBtn" class="primary" onclick="cookStep(1)">Næste</button>
+  </div>
+  <details class="cookIngs" id="cookIngs"></details>
+</section>
+
+<!-- ============ MIN UGE ============ -->
+<section id="week" class="screen" aria-label="Min uge">
+  <div class="topbar"><div class="logo">food<b>now</b><i></i></div><button class="roundBtn" onclick="openSettings()" aria-label="Indstillinger">⚙️</button></div>
+  <h1 class="bigTitle">Min uge</h1>
+  <div class="seg" role="tablist">
+    <button role="tab" id="segPlan" onclick="setSeg('plan')">🗓️ Ugeplan</button>
+    <button role="tab" id="segShop" onclick="setSeg('shop')">🛒 Indkøb</button>
+    <button role="tab" id="segFav" onclick="setSeg('fav')">❤️ Favoritter</button>
+  </div>
+  <div id="weekBody"></div>
+</section>
+
+<!-- ============ KØLESKAB ============ -->
+<section id="fridge" class="screen" aria-label="Hvad har jeg i køleskabet">
+  <div class="topbar"><button class="roundBtn" onclick="goBack()" aria-label="Tilbage">←</button><span></span></div>
+  <h1 class="bigTitle">🧊 Hvad har jeg i køleskabet?</h1>
+  <p class="subTitle">Skriv de råvarer du har, så finder vi retter du kan lave – og viser hvad du mangler.</p>
+  <label class="search"><span>➕</span><input id="fridgeInput" type="text" placeholder="Fx kylling, ris, løg …" autocomplete="off" enterkeyhint="done"
+    onkeydown="if(event.key==='Enter'){addFridge(this.value);this.value=''}"></label>
+  <div class="fridgeChips" id="fridgeChips"></div>
+  <div id="fridgeResults"></div>
+</section>
+
+<!-- ============ TAB BAR ============ -->
+<nav class="tabs" id="tabs" aria-label="Hovedmenu">
+  <button onclick="tab('home')" id="t-home" aria-current="true"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Opdag</button>
+  <button onclick="tab('k')" id="t-k"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M3 3v6M5 3v6M4 9v12M20 3c-2 2-2 5 0 7v11"/></svg>Retter</button>
+  <button onclick="tab('s')" id="t-s"><svg viewBox="0 0 24 24"><path d="M3 12h18a9 9 0 0 1-18 0z"/><path d="M8 12c0-3 2-5 4-6M12 12c0-4 3-6 5-6M15 12c1-2 3-3 5-3"/></svg>Salater</button>
+  <button onclick="tab('v')" id="t-v"><svg viewBox="0 0 24 24"><path d="M5 20c0-9 6-15 15-15 0 9-6 15-15 15z"/><path d="M5 20l8-8"/></svg>Vegansk</button>
+  <button onclick="tab('week')" id="t-week"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Min uge<span class="dot hidden" id="weekDot"></span></button>
+</nav>
+
+<div class="scrim" id="scrim" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data/klassikere-dk.js"></script>
+<script src="data/klassikere-verden.js"></script>
+<script src="data/salater.js"></script>
+<script src="data/vegansk.js"></script>
+<script src="js/art.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+# 🍽️ FoodNow
+
+Danmarks yndlingsretter i én app: **140 opskrifter** fordelt på 80 danske favoritter, 30 salater og 30 veganske retter. Appen har ugeplan, indkøbsliste, kokketilstand og vinforslag.
+
+## Indhold
+| Fane | Indhold |
+|---|---|
+| **Opdag** | Dagens forslag, 🎲 "Overrask mig", Danmarks top 10, sæsonretter (jul, vinter, sommer), hurtige hverdagsretter og "Hvad har jeg i køleskabet?" |
+| **Retter** | 80 retter: 40 danske klassikere og 40 internationale favoritter. Filtre for dansk/verden, kylling/okse/svin/fisk/vegetar, under 30 min, under 600 kcal, børnevenlig og favoritter |
+| **Salater** | 30 salater, fra kold kartoffelsalat og waldorf til cæsar og tabbouleh |
+| **Vegansk** | 30 retter uden kød, fisk, mejeriprodukter, æg og honning |
+| **Min uge** | Ugeplan med dage (🎲 kan fylde tomme hverdage ud), samlet indkøbsliste sorteret efter supermarkedets afdelinger, og favoritter |
+
+**Hver opskrift har:** valg af antal personer (1-16; mængderne regnes om), kalorier pr. person, sværhedsgrad, 🍷 vinforslag og 🧃 alkoholfrit alternativ, tip til at spare tid, kokketilstand med timer og notifikation, deling og "Prøv også".
+
+**Andet:** dag- og nattilstand, søgning i navne og ingredienser, haptisk feedback, skærmen holdes tændt under madlavning, og det hele virker uden internet. Alt gemmes kun på telefonen, og appen indsamler ingen data.
+
+## Research: sådan blev de 80 retter valgt
+- **Stegt flæsk med persillesovs** blev kåret til nationalret i 2014 med 44 % af 63.263 stemmer, foran smørrebrød og hakkebøf ([lex.dk](https://lex.dk/Danmarks_nationalret_og_debatten_om_dansk_madkultur), [Landbrugsavisen](https://landbrugsavisen.dk/stegt-flaesk-kaaret-som-danmarks-nationalret-10167)).
+- **Arlas tal om hverdagsretter:** pasta med kødsovs 59 %, stegt kylling 57 %, lasagne og frikadeller 49 %.
+- **Landbrug & Fødevarer (2024):** pizza, kyllingeretter og rugbrød er det, flest har spist til aftensmad dagen før, efterfulgt af bøf, pasta og burger ([analyse](https://lf.dk/media/xjqmowlp/markedsanalyse_danskernes-aftensmad-i-2024_5022025.pdf)).
+- Resten af listen består af de traditionelle danske klassikere (frikadeller, flæskesteg, boller i karry, hakkebøf, biksemad osv.) og de internationale retter, der fylder mest i danske køkkener.
+
+"Danmarks favoritter" (top 10) er sammensat ud fra kilderne ovenfor. Det er ikke én officiel rangliste.
+
+Alle opskrifter er skrevet til FoodNow. Ingen tekster eller billeder er kopieret fra andre sider. Kalorier er vejledende skøn.
+
+## Billeder
+Hver ret har sin egen tegnede illustration, som laves af `www/js/art.js` ud fra rettens farver. Den kræver ingen billedfiler og ingen rettigheder.
+**Rigtige fotos senere:** læg billedet i `www/billeder/` og tilføj `img:"billeder/stegt-flaesk.jpg"` på retten i `www/data/*.js`. Så bruges fotoet automatisk.
+
+## Byg og upload til App Store
+Kræver en Mac med Xcode 16+ og en Apple Developer-konto (99 USD om året).
+```bash
+git clone https://github.com/morri-byte/foodnow.git
+cd foodnow
+npm install
+npx cap sync ios
+npx cap open ios
+```
+1. I Xcode vælger du target **App**, derefter **Signing & Capabilities**, og vælger dit Team. Bundle ID er `dk.foodnow.app`; ret det, hvis det er optaget (også i `capacitor.config.json`).
+2. Test på din iPhone (tilslut den og tryk ▶︎). Tjek notifikation, vibration og at skærmen holdes tændt.
+3. I **App Store Connect** opretter du en ny app: navnet "FoodNow" (eller "FoodNow – Danske opskrifter", hvis navnet er taget), primært sprog dansk.
+4. Upload buildet: vælg **Any iOS Device**, så **Product › Archive**, derefter **Distribute** og **App Store Connect**.
+5. Udfyld App Store-siden:
+   - **Privatliv:** "Data Not Collected".
+   - **Aldersgrænse:** vælg at appen nævner alkohol ("Infrequent/Mild Alcohol References") på grund af vinforslagene.
+   - **Skærmbilleder:** 6,9" iPhone.
+   - **URL'er:** Apple kræver en support-URL og en URL til privatlivspolitik. En simpel side er nok.
+
+## Til senere: indtjening via reklamer og partnere
+Appen har bevidst **ingen reklamer i version 1**. Når der er brugere, er disse oplagte muligheder:
+- **"Bestil varerne"-knap på indkøbslisten** (nemlig.com, Bilka To Go, Rema 1000 m.fl.) via affiliate eller partneraftale. Listen er allerede sorteret efter afdelinger, så den egner sig til det. Det er den mest naturlige indtægt.
+- **Sponsoreret "Ugens ret"** på forsiden, fx fra en supermarkedskæde eller en råvareproducent.
+- **Vinforslag** kan kobles til en vinhandel.
+
+Reklamer der bruger sporing kræver Apples **App Tracking Transparency**-spørgsmål og **GDPR-samtykke**, og privatlivsoplysningerne i App Store skal opdateres. Kontekstuelle annoncer uden sporing, fx "Ugens tilbud" fra en partner, kræver ingen af delene og er nemmest at starte med.
+
+## Struktur
+```
+www/index.html          skærme og tab-bar
+www/css/app.css         designsystem (lys og mørk)
+www/js/app.js           logik: navigation, lister, opskrift, ugeplan, indkøb, køleskab, kokketilstand
+www/js/art.js           tegnede ret-illustrationer
+www/data/*.js           de 140 opskrifter (4 personer som grundmængde)
+ios/                    Xcode-projekt (Capacitor 8, Swift Package Manager)
+```
