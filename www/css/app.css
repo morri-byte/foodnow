@@ -179,6 +179,13 @@ button:active{opacity:.7}
 .cookIngs li{padding:3px 0;break-inside:avoid}
 .cookIngs b{color:var(--brand-2)}
 
+/* ---------- flere timere ---------- */
+.timerChips{display:flex;flex-wrap:wrap;gap:8px;margin:-12px 0 16px}
+.timerChips:empty{display:none}
+.tChip{background:rgba(255,255,255,.12);color:#fff;font-weight:800;font-size:.85rem;padding:8px 12px;border-radius:999px;font-variant-numeric:tabular-nums}
+.tChip.ringing{background:var(--brand-2);color:#1c1b19;animation:pulse 1.1s ease-in-out infinite}
+.timerHint{margin:10px 0 0;font-size:.8rem;color:#b9b1a6}
+
 /* ---------- min uge ---------- */
 .seg{display:flex;background:var(--chip);border-radius:999px;padding:4px;margin:14px 0 6px}
 .seg button{flex:1;padding:10px 6px;border-radius:999px;font-weight:750;font-size:.9rem;color:var(--ink-2)}
@@ -189,7 +196,14 @@ button:active{opacity:.7}
 .dayHead small{color:var(--ink-3);font-weight:700;font-size:.78rem}
 .dayHead.today b{color:var(--brand)}
 .dayDish{display:flex;align-items:center;gap:12px;padding:6px 0}
-.dayDish .thumb{flex:0 0 54px;height:54px;border-radius:14px;overflow:hidden}
+.dayDish .thumb{flex:0 0 54px;height:54px;border-radius:14px;overflow:hidden;display:block}
+.dayTools{display:flex;gap:6px;margin:2px 0 6px 66px;flex-wrap:wrap}
+.dayTools button{font-size:.76rem;font-weight:750;padding:6px 10px;border-radius:999px;background:var(--chip);color:var(--ink-2)}
+.dayTools button.on{background:var(--green-soft);color:var(--green)}
+.miniIng{list-style:none;margin:0 0 8px 66px;padding:8px 12px;background:var(--bg);border-radius:12px;font-size:.84rem;columns:2;column-gap:14px}
+.miniIng li{padding:2px 0;break-inside:avoid}
+.miniIng b{color:var(--brand)}
+.miniIng .staple{font-size:.7rem}
 .dayDish .dTxt{flex:1;min-width:0;text-align:left}
 .dayDish .dTxt b{display:block;font-size:.95rem;line-height:1.25}
 .dayDish .dTxt small{color:var(--ink-2);font-size:.78rem;font-weight:600}
@@ -260,6 +274,8 @@ button:active{opacity:.7}
 /* ---------- toast ---------- */
 .toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 84px);transform:translate(-50%,16px);opacity:0;z-index:60;background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:700;font-size:.88rem;transition:all .2s;pointer-events:none;max-width:90vw;text-align:center;box-shadow:var(--shadow-lg)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+body.noTabs .toast{bottom:auto;top:calc(var(--safe-t) + 64px);transform:translate(-50%,-16px)}
+body.noTabs .toast.show{transform:translate(-50%,0)}
 
 .footer{text-align:center;color:var(--ink-3);font-size:.8rem;margin:34px 0 10px}
 @media (min-width:700px){ .hero .art{height:320px} .card .art{height:150px} .rail .card{flex-basis:230px} }

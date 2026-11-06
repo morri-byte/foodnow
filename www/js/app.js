@@ -16,7 +16,7 @@ const norm = s => String(s||'').toLowerCase().normalize('NFC').trim();
 
 /* ---------------- STATE (gemmes kun på enheden) ---------------- */
 const KEY = 'foodnow_v1';
-const S = { favs:[], plan:{}, shop:[], serv:{}, bought:[], showStaples:false, defServ:4, fridge:[] };
+const S = { favs:[], plan:{}, shop:[], serv:{}, bought:[], showStaples:false, defServ:4, fridge:[], autoShop:true, auto:[] };
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
 const favs = new Set(S.favs), bought = new Set(S.bought);
 function save(){
@@ -151,6 +151,7 @@ function show(id){
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id===id));
   cur = id;
   $('tabs').classList.toggle('hidden', id==='cook' || id==='detail');
+  document.body.classList.toggle('noTabs', id==='cook' || id==='detail');
   window.scrollTo(0,0);
   statusBar();
 }
@@ -349,11 +350,12 @@ function renderDetail(){
 function serv(d){ const id=current.id; const n=Math.min(16,Math.max(1,pers(id)+d)); if(n===(S.defServ||BASE)) delete S.serv[id]; else S.serv[id]=n; save(); haptic(); const y=window.scrollY; renderDetail(); window.scrollTo(0,y); }
 function toggleShop(id){
   const i = S.shop.indexOf(id);
+  S.auto=(S.auto||[]).filter(x=>x!==id);
   if (i>=0){ S.shop.splice(i,1); [...bought].forEach(k=>{ if(k.startsWith(id+':')) bought.delete(k); }); toast('Fjernet fra indkøbslisten'); }
   else { S.shop.push(id); toast('🛒 Lagt på indkøbslisten'); }
   save(); haptic();
   if (cur==='detail'){ const y=window.scrollY; renderDetail(); window.scrollTo(0,y); }
-  if (cur==='week') renderWeek();
+  if (cur==='week'){ const y=window.scrollY; renderWeek(); window.scrollTo(0,y); }
 }
 function shareDish(){
   const r=current, rc=recipe(r), n=pers(r.id);
@@ -379,8 +381,8 @@ function pickDay(id){
 }
 function setDay(id, day){
   Object.keys(S.plan).forEach(d=>{ S.plan[d]=(S.plan[d]||[]).filter(x=>x!==id); });
-  if (day!==null){ (S.plan[day]=S.plan[day]||[]).push(id); toast('🗓️ Lagt på '+(day==='x'?'ugeplanen':DAYS[+day].toLowerCase())); }
-  else toast('Fjernet fra ugeplanen');
+  if (day!==null){ (S.plan[day]=S.plan[day]||[]).push(id); const added=autoAdd(id); toast('🗓️ Lagt på '+(day==='x'?'ugeplanen':DAYS[+day].toLowerCase())+(added?' og indkøbslisten':'')); }
+  else { autoRemove(id); toast('Fjernet fra ugeplanen'); }
   save(); haptic(); closeSheet();
   if (cur==='detail'){ const y=window.scrollY; renderDetail(); window.scrollTo(0,y); }
   if (cur==='week') renderWeek();
@@ -394,6 +396,9 @@ function openSettings(){
     <button aria-selected="${m==='light'}" onclick="setTheme('light')">☀️ Dagtilstand<small>lys</small></button>
     <button aria-selected="${m==='dark'}" onclick="setTheme('dark')">🌙 Nattilstand<small>mørk</small></button>
   </div>
+  <p class="count">Ugeplan</p>
+  <div class="toggleRow" style="background:var(--card);box-shadow:var(--shadow);border-radius:var(--r-sm);padding:12px 14px;margin:0 0 8px"><span>Læg ugeplanens retter automatisk på indkøbslisten</span>
+    <button class="switch" role="switch" aria-checked="${S.autoShop!==false}" onclick="S.autoShop=!(S.autoShop!==false);save();openSettings()" aria-label="Automatisk indkøbsliste"></button></div>
   <p class="count">Standard antal personer</p>
   <div class="servings" style="margin-top:0"><span class="lbl"><b>👥 ${S.defServ} personer</b><small>Bruges når du åbner en ny opskrift</small></span>
     <span class="stepper"><button onclick="setDef(-1)" ${S.defServ<=1?'disabled':''} aria-label="Færre">−</button><output>${S.defServ}</output><button onclick="setDef(1)" ${S.defServ>=12?'disabled':''} aria-label="Flere">+</button></span></div>
@@ -409,18 +414,28 @@ function openCredits(){
 function setDef(d){ S.defServ=Math.min(12,Math.max(1,(S.defServ||4)+d)); save(); haptic(); openSettings(); }
 
 /* ---------------- MIN UGE ---------------- */
-let seg = 'plan';
+let seg = 'plan', hideBought = false;
 function setSeg(s){ seg=s; haptic(); renderWeek(); }
 function openWeekSeg(s){ seg=s; tab('week'); }
 function renderWeek(){
   ['plan','shop','fav'].forEach(x=>$('seg'+x[0].toUpperCase()+x.slice(1)).setAttribute('aria-selected', x===seg));
   $('weekBody').innerHTML = seg==='plan' ? planHTML() : seg==='shop' ? shopHTML() : favHTML();
 }
+const openIngs = new Set();
 function thumbRow(r, extra, removeFn){
-  return `<div class="dayDish"><div class="thumb">${dishArt(r)}</div>
-    <button class="dTxt" onclick="openDish('${r.id}')"><b>${esc(r.n)}</b><small>⏱ ${r.t} min · 👥 ${pers(r.id)} · ${S.shop.includes(r.id)?'🛒 på listen':'ikke på listen'}${extra||''}</small></button>
-    <button class="iconX" onclick="${removeFn}" aria-label="Fjern">✕</button></div>`;
+  const n=pers(r.id), open=openIngs.has(r.id), inShop=S.shop.includes(r.id);
+  return `<div class="dayDish">
+    <button class="thumb" onclick="openDish('${r.id}')" aria-label="Åbn ${esc(r.n)}">${dishArt(r)}</button>
+    <button class="dTxt" onclick="openDish('${r.id}')"><b>${esc(r.n)}</b><small>⏱ ${r.t} min · 👥 ${n} pers.${extra||''}</small></button>
+    <button class="iconX" onclick="${removeFn}" aria-label="Fjern ${esc(r.n)} fra ugeplanen">✕</button></div>
+    <div class="dayTools">
+      <button onclick="toggleIngs('${r.id}')">${open?'▾':'▸'} Ingredienser</button>
+      <button onclick="openDish('${r.id}')">📖 Opskrift</button>
+      <button class="${inShop?'on':''}" onclick="toggleShop('${r.id}')">${inShop?'✓ På listen':'🛒 Læg på listen'}</button>
+    </div>
+    ${open?`<ul class="miniIng">${recipe(r).ing.map(x=>{const a=amount(x,n);return `<li><b>${a||''}</b> ${esc(x.name)}${x.staple?' <span class="staple">🏠</span>':''}</li>`}).join('')}</ul>`:''}`;
 }
+function toggleIngs(id){ openIngs.has(id)?openIngs.delete(id):openIngs.add(id); haptic(); const y=window.scrollY; renderWeek(); window.scrollTo(0,y); }
 function planHTML(){
   const dates = weekDates(), today=(new Date().getDay()+6)%7;
   const all = Object.values(S.plan).flat().filter(id=>BYID[id]);
@@ -439,15 +454,24 @@ function planHTML(){
   if (x.length) h+=`<div class="day"><div class="dayHead"><b>Senere på ugen</b></div>${x.map(id=>thumbRow(BYID[id],'',`setDay('${id}',null)`)).join('')}</div>`;
   return h;
 }
+/* retter i ugeplanen lægges automatisk på indkøbslisten (kan slås fra i Indstillinger) */
+function autoAdd(id){
+  if (!S.autoShop || S.shop.includes(id)) return false;
+  S.shop.push(id); S.auto=[...new Set([...(S.auto||[]), id])]; return true;
+}
+function autoRemove(id){
+  if (Object.values(S.plan).flat().includes(id)) return;
+  if ((S.auto||[]).includes(id)){ S.shop=S.shop.filter(x=>x!==id); S.auto=S.auto.filter(x=>x!==id); [...bought].forEach(k=>{ if(k.startsWith(id+':')) bought.delete(k); }); }
+}
 function randomDish(exclude){
   const used = new Set(exclude), prs = Object.values(S.plan).flat().map(id=>BYID[id]&&BYID[id].pr);
   let pool = R.filter(r=>r.c!=='s' && !used.has(r.id) && r.t<=60);
   const last = prs[prs.length-1]; const p2 = pool.filter(r=>r.pr!==last); if (p2.length) pool=p2;
   return pool[Math.floor(Math.random()*pool.length)];
 }
-function suggestDay(i){ const r=randomDish(Object.values(S.plan).flat()); (S.plan[i]=S.plan[i]||[]).push(r.id); save(); haptic(); renderWeek(); toast('🎲 '+DAYS[i]+': '+r.n); }
+function suggestDay(i){ const r=randomDish(Object.values(S.plan).flat()); (S.plan[i]=S.plan[i]||[]).push(r.id); autoAdd(r.id); save(); haptic(); renderWeek(); toast('🎲 '+DAYS[i]+': '+r.n); }
 function fillWeek(){
-  let n=0; for(let i=0;i<5;i++){ if(!(S.plan[i]||[]).length){ const r=randomDish(Object.values(S.plan).flat()); (S.plan[i]=S.plan[i]||[]).push(r.id); n++; } }
+  let n=0; for(let i=0;i<5;i++){ if(!(S.plan[i]||[]).length){ const r=randomDish(Object.values(S.plan).flat()); (S.plan[i]=S.plan[i]||[]).push(r.id); autoAdd(r.id); n++; } }
   save(); haptic('success'); renderWeek(); toast(n?`🎲 ${n} hverdage fyldt ud – byt gerne om`:'Hverdagene er allerede planlagt');
 }
 function planToShop(){
@@ -474,10 +498,11 @@ function shopHTML(){
   const g = shopItems(); let left=0, done=0;
   Object.values(g).flat().forEach(it=>bought.has(it.key)?done++:left++);
   let h = `<div class="shopDishes">${dishes.map(id=>`<span class="sdPill"><span class="thumb">${dishArt(BYID[id])}</span>${esc(BYID[id].n.split(' ').slice(0,3).join(' '))} · ${pers(id)}p<button onclick="toggleShop('${id}')" aria-label="Fjern ${esc(BYID[id].n)}">✕</button></span>`).join('')}</div>
-    <div class="weekActions"><button class="primary" onclick="shareShop()">📤 Del listen</button><button onclick="clearBought()">🧹 Ryd købte</button></div>
+    <div class="weekActions"><button class="primary" onclick="shareShop()">📤 Del listen</button>${hideBought&&done?`<button onclick="hideBought=false;renderWeek()">👁️ Vis købte (${done})</button>`:`<button onclick="clearBought()">🧹 Ryd købte</button>`}</div>
     <div class="toggleRow"><span>${left} varer tilbage${done?` · ${done} købt`:''}</span><span style="display:flex;align-items:center;gap:8px">Vis basisvarer <button class="switch" role="switch" aria-checked="${!!S.showStaples}" onclick="S.showStaples=!S.showStaples;save();renderWeek()" aria-label="Vis basisvarer"></button></span></div>`;
   AORDER.filter(a=>g[a]).forEach(a=>{
-    const items = g[a].slice().sort((x,y)=>(bought.has(x.key)-bought.has(y.key)) || x.name.localeCompare(y.name,'da'));
+    const items = g[a].filter(it=>!(hideBought && bought.has(it.key))).sort((x,y)=>(bought.has(x.key)-bought.has(y.key)) || x.name.localeCompare(y.name,'da'));
+    if (!items.length) return;
     h += `<div class="aisle"><h3>${a}</h3>${items.map(it=>`<button class="item ${bought.has(it.key)?'bought':''}" onclick="toggleBought('${it.key}')"><span class="check"></span><span class="txt"><span>${esc(it.txt)}</span><small>${esc(it.dish)}</small></span></button>`).join('')}</div>`;
   });
   return h;
@@ -486,8 +511,11 @@ function toggleBought(k){ bought.has(k)?bought.delete(k):bought.add(k); save(); 
 function clearBought(){
   const ks=[...bought]; if(!ks.length){ toast('Intet er krydset af endnu'); return; }
   // fjern retter hvor alt er købt
+  const before=S.shop.length;
   S.shop = S.shop.filter(id=>{ const r=BYID[id]; if(!r) return false; const need=recipe(r).ing.map((x,i)=>({x,k:id+':'+i})).filter(o=>!o.x.staple||S.showStaples); return !need.every(o=>bought.has(o.k)); });
-  bought.clear(); save(); renderWeek(); toast('🧹 Købte varer er ryddet');
+  [...bought].forEach(k=>{ if(!S.shop.includes(k.split(':')[0])) bought.delete(k); });
+  hideBought = true; save(); renderWeek();
+  const gone=before-S.shop.length; toast(gone?`🧹 ${gone} færdigkøbte retter fjernet – købte varer er skjult`:'🧹 Købte varer er skjult');
 }
 function shareShop(){
   const g=shopItems(); let t='🛒 Indkøbsliste fra FoodNow\n';
@@ -508,9 +536,9 @@ function updateWeekDot(){
 const FRIDGE_SUG = ['kylling','hakket oksekød','laks','bacon','kartofler','ris','pasta','løg','æg','fløde','tomater','peberfrugt','broccoli','kikærter','linser','feta','spinat','squash'];
 function openFridge(){ push(); renderFridge(); show('fridge'); }
 function addFridge(v){ v=norm(v); if(!v) return; v.split(',').map(x=>x.trim()).filter(Boolean).forEach(x=>{ if(!S.fridge.includes(x)) S.fridge.push(x); }); save(); haptic(); renderFridge(); }
-function rmFridge(v){ S.fridge=S.fridge.filter(x=>x!==v); save(); renderFridge(); }
+function rmFridge(i){ S.fridge.splice(i,1); save(); renderFridge(); }
 function renderFridge(){
-  $('fridgeChips').innerHTML = S.fridge.map(x=>`<button class="fChip" onclick="rmFridge('${esc(x)}')">${esc(x)} ✕</button>`).join('') +
+  $('fridgeChips').innerHTML = S.fridge.map((x,i)=>`<button class="fChip" onclick="rmFridge(${i})" aria-label="Fjern ${esc(x)}">${esc(x)} ✕</button>`).join('') +
     FRIDGE_SUG.filter(x=>!S.fridge.includes(x)).slice(0, S.fridge.length?8:18).map(x=>`<button class="fChip sug" onclick="addFridge('${x}')">+ ${x}</button>`).join('');
   if (!S.fridge.length){ $('fridgeResults').innerHTML = `<div class="empty"><span class="big">🧊</span>Tilføj et par råvarer, fx <b>kylling</b> og <b>ris</b>.</div>`; return; }
   const res = R.map(r=>{
@@ -526,71 +554,99 @@ function renderFridge(){
   }).join('') || `<div class="empty">Ingen retter matcher endnu – prøv en anden råvare.</div>`);
 }
 
-/* ---------------- KOKKETILSTAND ---------------- */
-let idx=0, timerId=null, left=0, endAt=0, ringing=false, audioCtx=null;
-function startCook(){ idx=0; push(); show('cook'); renderStep(); keepAwake(true); }
-function exitCook(){ stopTimer(); keepAwake(false); goBack(); }
+/* ---------------- KOKKETILSTAND ----------------
+   Timere er knyttet til trinnet og fortsætter med at køre, når man går videre.
+   Flere timere kan køre samtidig; de vises som chips øverst. */
+let idx=0, audioCtx=null, tick=null, cookDish=null;
+const timers = {};   // stepIdx -> {total, left, endAt, running, ringing}
+function startCook(){
+  idx=0; cookDish=current; Object.keys(timers).forEach(k=>delete timers[k]);
+  push(); show('cook'); renderStep(); keepAwake(true);
+}
+function exitCook(){
+  const running = Object.values(timers).some(t=>t.running);
+  if (running && !confirm('Der kører stadig en timer. Vil du afslutte madlavningen alligevel?')) return;
+  Object.keys(timers).forEach(k=>{ cancelNotif(+k); delete timers[k]; });
+  clearInterval(tick); tick=null; keepAwake(false); goBack();
+}
 function cookStep(d){
-  const st=recipe(current).steps; const n=idx+d;
-  if (n<0) return; if (n>=st.length){ haptic('success'); toast('🎉 Velbekomme!'); exitCook(); return; }
-  idx=n; haptic(); renderStep();
+  const st=recipe(cookDish).steps; const n=idx+d;
+  if (n<0) return;
+  if (n>=st.length){ haptic('success'); toast('🎉 Velbekomme!'); exitCook(); return; }
+  idx=n; haptic(); renderStep(); window.scrollTo(0,0);
+}
+function jumpStep(i){ idx=i; haptic(); renderStep(); }
+const clock = s => String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+function timerOf(i){
+  const s=recipe(cookDish).steps[i]; if(!s||!s.timer) return null;
+  return timers[i] || (timers[i]={total:s.timer,left:s.timer,endAt:0,running:false,ringing:false});
 }
 function renderStep(){
-  stopTimer();
-  const r=current, rc=recipe(r), s=rc.steps[idx], tot=rc.steps.length, n=pers(r.id);
+  const r=cookDish, rc=recipe(r), s=rc.steps[idx], tot=rc.steps.length, n=pers(r.id);
   $('cookTitle').textContent = `Trin ${idx+1} af ${tot} · ${n} pers.`;
   $('progress').innerHTML = rc.steps.map((_,i)=>`<span class="${i<=idx?'done':''}"></span>`).join('');
   $('cookStep').textContent = s.t;
   $('prevBtn').disabled = idx===0;
   $('nextBtn').textContent = idx===tot-1 ? 'Færdig 🎉' : 'Næste';
-  $('timerBox').innerHTML = s.timer ? `<div class="timer" id="timer"><div class="clock" id="clock">${clock(s.timer)}</div>
-    <button id="timerBtn" onclick="toggleTimer(${s.timer})">Start timer</button><button onclick="resetTimer(${s.timer})">Nulstil</button></div>` : '';
-  left = s.timer||0; ringing=false;
+  const t = timerOf(idx);
+  $('timerBox').innerHTML = t ? `<div class="timer ${t.ringing?'ringing':''}" id="timer"><div class="clock" id="clock">${t.ringing?'Klar! ⏰':clock(t.left)}</div>
+    <button id="timerBtn" onclick="toggleTimer(${idx})">${t.ringing?'Nulstil':t.running?'Pause':t.left<t.total?'Fortsæt':'Start timer'}</button><button onclick="resetTimer(${idx})">Nulstil</button>
+    ${t.running?'<p class="timerHint">Timeren kører videre, når du går til næste trin.</p>':''}</div>` : '';
+  renderTimerChips();
   const ci=$('cookIngs'), open=ci.open;
   ci.innerHTML = `<summary>Ingredienser til ${n} ${n===1?'person':'personer'}</summary><ul>${rc.ing.map(x=>{const a=amount(x,n);return `<li>${a?`<b>${a}</b> `:''}${esc(x.name)}</li>`}).join('')}</ul>`;
   ci.open = open;
 }
-const clock = s => String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
-function toggleTimer(t){
-  if (timerId){ stopTimer(); $('timerBtn').textContent='Fortsæt'; return; }
-  if (ringing){ resetTimer(t); return; }
-  if (left<=0) left=t;
-  $('timerBtn').textContent='Pause';
-  unlockAudio();
-  endAt = Date.now()+left*1000;
-  scheduleNotif(endAt);
-  timerId = setInterval(()=>{
-    left = Math.ceil((endAt-Date.now())/1000);
-    const c=$('clock'); if(!c){ stopTimer(); return; }
-    c.textContent = clock(Math.max(left,0));
-    if (left<=0){ stopTimer(); ringing=true; $('timer').classList.add('ringing'); c.textContent='Klar! ⏰'; $('timerBtn').textContent='Nulstil'; ring(); }
+function renderTimerChips(){
+  const el=$('timerChips'); if(!el) return;
+  const list=Object.entries(timers).filter(([i,t])=>(t.running||t.ringing) && +i!==idx);
+  el.innerHTML = list.map(([i,t])=>`<button class="tChip ${t.ringing?'ringing':''}" onclick="jumpStep(${i})">⏱ Trin ${+i+1}: ${t.ringing?'Klar!':clock(t.left)}</button>`).join('');
+}
+function ensureTick(){
+  if (tick) return;
+  tick = setInterval(()=>{
+    let any=false;
+    Object.entries(timers).forEach(([i,t])=>{
+      if (!t.running) return; any=true;
+      t.left = Math.max(0, Math.ceil((t.endAt-Date.now())/1000));
+      if (t.left<=0){ t.running=false; t.ringing=true; ring(+i); if(+i===idx) renderStep(); }
+    });
+    if (cur==='cook'){ const t=timers[idx], c=$('clock'); if (t && c && t.running) c.textContent=clock(t.left); renderTimerChips(); }
+    if (!any && !Object.values(timers).some(t=>t.running)) { clearInterval(tick); tick=null; }
   }, 250);
 }
-function resetTimer(t){ stopTimer(); left=t; ringing=false; const c=$('clock'); if(c){ c.textContent=clock(t); $('timer').classList.remove('ringing'); $('timerBtn').textContent='Start timer'; } }
-function stopTimer(){ if(timerId){ clearInterval(timerId); timerId=null; left=Math.max(0,Math.ceil((endAt-Date.now())/1000)); cancelNotif(); } }
+function toggleTimer(i){
+  const t=timerOf(i); if(!t) return;
+  if (t.ringing){ resetTimer(i); return; }
+  if (t.running){ t.running=false; t.left=Math.max(0,Math.ceil((t.endAt-Date.now())/1000)); cancelNotif(i); }
+  else { if (t.left<=0) t.left=t.total; t.running=true; t.endAt=Date.now()+t.left*1000; unlockAudio(); scheduleNotif(i, t.endAt); ensureTick(); }
+  haptic(); renderStep();
+}
+function resetTimer(i){ const t=timerOf(i); if(!t) return; t.running=false; t.ringing=false; t.left=t.total; cancelNotif(i); renderStep(); }
 const NID = 7001; let notifAsked=false;
-async function scheduleNotif(at){
-  const st = recipe(current).steps[idx].t;
-  const title='⏰ Timeren er færdig', body=current.n+': '+(st.length>90?st.slice(0,88)+'…':st);
+async function scheduleNotif(i, at){
+  const st = recipe(cookDish).steps[i].t;
+  const title='⏰ Timeren er færdig', body=`${cookDish.n} – trin ${i+1}: `+(st.length>80?st.slice(0,78)+'…':st);
   const ln = plugin('LocalNotifications');
   if (ln){ try{
       let p = await ln.checkPermissions(); if (p.display!=='granted') p = await ln.requestPermissions();
       if (p.display!=='granted'){ if(!notifAsked){ toast('Slå notifikationer til i Indstillinger for at få besked'); notifAsked=true; } return; }
-      await ln.cancel({notifications:[{id:NID}]}).catch(()=>{});
-      await ln.schedule({notifications:[{id:NID,title,body,schedule:{at:new Date(at),allowWhileIdle:true}}]});
+      await ln.cancel({notifications:[{id:NID+i}]}).catch(()=>{});
+      await ln.schedule({notifications:[{id:NID+i,title,body,schedule:{at:new Date(at),allowWhileIdle:true}}]});
     }catch(e){} return; }
   try { if ('Notification' in window && Notification.permission==='default' && !notifAsked){ notifAsked=true; Notification.requestPermission(); } } catch(e){}
 }
-function cancelNotif(){ const ln=plugin('LocalNotifications'); if(ln) ln.cancel({notifications:[{id:NID}]}).catch(()=>{}); }
+function cancelNotif(i){ const ln=plugin('LocalNotifications'); if(ln) ln.cancel({notifications:[{id:NID+i}]}).catch(()=>{}); }
 function unlockAudio(){ try{ audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); }catch(e){} }
-function ring(){
+function ring(i){
   haptic('success');
+  if (cur==='cook' && i!==idx) toast(`⏰ Timeren til trin ${i+1} er færdig`);
   try{ if(audioCtx){ const t0=audioCtx.currentTime; [0,.3,.6,1.3,1.6,1.9].forEach(d=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=880; g.gain.setValueAtTime(.0001,t0+d); g.gain.exponentialRampToValueAtTime(.35,t0+d+.02); g.gain.exponentialRampToValueAtTime(.0001,t0+d+.24); o.connect(g).connect(audioCtx.destination); o.start(t0+d); o.stop(t0+d+.3); }); } }catch(e){}
-  try{ if(!plugin('LocalNotifications') && 'Notification' in window && Notification.permission==='granted' && document.hidden) new Notification('⏰ Timeren er færdig',{body:current.n}); }catch(e){}
+  try{ if(!plugin('LocalNotifications') && 'Notification' in window && Notification.permission==='granted' && document.hidden) new Notification('⏰ Timeren er færdig',{body:cookDish.n+' – trin '+(i+1)}); }catch(e){}
 }
 
 /* ---------------- START ---------------- */
 applyTheme();
 renderHome();
 updateWeekDot();
-document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if($('sheet').classList.contains('show')) closeSheet(); else if(cur!=='home' && !TABS.includes(cur)) goBack(); } });
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if($('sheet').classList.contains('show')) closeSheet(); else if(cur==='cook') exitCook(); else if(cur!=='home' && !TABS.includes(cur)) goBack(); } });
