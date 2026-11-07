@@ -2,11 +2,16 @@
    FoodNow – app-logik (vanilla JS, ingen afhængigheder)
    ============================================================ */
 'use strict';
-const R = window.FN;                       // alle 140 retter
+const R = window.FN;                       // alle retter (klassikere, salater, vegetar, vegansk)
 /* rigtige fotos (data/billeder.js) – falder tilbage til tegning hvis et foto mangler */
 const IMG = window.FN_IMG || {};
 R.forEach(r => { if (IMG[r.id]) r.img = IMG[r.id].f; });
 const BYID = Object.fromEntries(R.map(r => [r.id, r]));
+/* rækkefølge for de kendte salater – de mest berømte først */
+const KENDT = ['caesar','graesk-salat','waldorf','caprese','nicoise','s-cobb','coleslaw','s-hoensesalat','s-italiensk','s-panzanella','tabbouleh','s-fattoush','s-olivier','s-chefsalat','s-tunsalat','s-karrysalat','s-som-tam','s-shopska','s-wedge','s-tysk-kartoffelsalat','kold-kartoffelsalat','pastasalat','broccolisalat','s-makrelsalat','s-sildesalat','roedbedesalat','agurkesalat','aeg-rejesalat','pasta-tun-salat','fransk-kartoffelsalat'];
+const kRank = r => { const i = KENDT.indexOf(r.id); return i<0 ? 999 : i; };
+const COUNT = R.reduce((c,r)=>(c[r.c]=(c[r.c]||0)+1,c),{});
+const tabFor = m => m==='g' ? 'v' : (['home','k','s','v','week'].includes(m) ? m : null);
 const BASE = 4;                            // opskrifterne er skrevet til 4 personer
 const TOP10 = ['stegt-flaesk','frikadeller','spaghetti-bolognese','flaeskesteg','lasagne','pizza','boller-i-karry','smoerrebroed','sprode-kyllingelaar','hakkeboef'];
 const DAYS = ['Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag','Søndag'];
@@ -155,19 +160,19 @@ function show(id){
   window.scrollTo(0,0);
   statusBar();
 }
-function setTabHighlight(t){ TABS.forEach(x => $('t-'+x).setAttribute('aria-current', x===t)); }
+function setTabHighlight(t){ if(!t) return; TABS.forEach(x => $('t-'+x).setAttribute('aria-current', x===t)); }
 function tab(t){
   stack = []; haptic();
   setTabHighlight(t);
   if (t==='home'){ renderHome(); show('home'); }
   else if (t==='week'){ renderWeek(); show('week'); }
-  else openList(t, true);
+  else openList(t==='v' ? 'g' : t, true);
 }
 function push(){ stack.push({screen:cur, mode:listMode, dish:current&&current.id, y:window.scrollY}); }
 function goBack(){
   const p = stack.pop();
   if (!p) { tab('home'); return; }
-  if (p.screen==='list'){ listMode=p.mode; renderList(); show('list'); if(TABS.includes(listMode)) setTabHighlight(listMode); }
+  if (p.screen==='list'){ listMode=p.mode; renderList(); show('list'); setTabHighlight(tabFor(listMode)); }
   else if (p.screen==='detail' && p.dish){ current=BYID[p.dish]; renderDetail(); show('detail'); }
   else if (p.screen==='week'){ renderWeek(); show('week'); setTabHighlight('week'); }
   else if (p.screen==='fridge'){ renderFridge(); show('fridge'); }
@@ -181,7 +186,7 @@ function card(r, rank){
   return `<div class="card" role="button" tabindex="0" onclick="openDish('${r.id}')" onkeydown="if(event.key==='Enter')openDish('${r.id}')">
     <div class="art">${dishArt(r)}${rank?`<span class="rank">${rank}</span>`:''}
       <button class="heart" onclick="event.stopPropagation();toggleFav('${r.id}',this)" aria-label="${fav?'Fjern fra':'Gem i'} favoritter">${fav?'❤️':'🤍'}</button>
-      ${r.c==='k'&&r.o==='dk'?'<span class="tagPill">🇩🇰 Klassiker</span>':r.pr==='vegan'&&r.c!=='v'?'<span class="tagPill">🌱 Vegansk</span>':''}
+      ${r.c==='k'&&r.o==='dk'?'<span class="tagPill">🇩🇰 Klassiker</span>':r.kendt?'<span class="tagPill">⭐ Kendt</span>':r.pr==='vegan'&&r.c!=='v'?'<span class="tagPill">🌱 Vegansk</span>':r.c==='g'?'<span class="tagPill">🥚 Vegetar</span>':''}
     </div>
     <div class="cBody"><h3>${esc(r.n)}</h3><div class="cMeta"><span>⏱ ${r.t} min</span><span>🔥 ${r.kcal} kcal</span></div></div>
   </div>`;
@@ -233,14 +238,16 @@ function renderHome(){
   html += `
   <div class="secHead"><h2>⚡ Hurtigt på hverdage<small>Klar på 30 minutter eller mindre</small></h2><button onclick="openList('k',false,['hurtig'])">Se alle</button></div>
   ${rail(mains.filter(r=>r.t<=30).slice(0,12))}
-  <div class="secHead"><h2>🥗 Friske salater</h2><button onclick="tab('s')">Se alle 30</button></div>
-  ${rail(R.filter(r=>r.c==='s').slice(0,10))}
-  <div class="secHead"><h2>🌱 Grønt & vegansk</h2><button onclick="tab('v')">Se alle 30</button></div>
+  <div class="secHead"><h2>🥗 Kendte salater<small>Fra cæsarsalat til hønsesalat</small></h2><button onclick="tab('s')">Se alle ${COUNT.s}</button></div>
+  ${rail(R.filter(r=>r.c==='s'&&r.kendt).sort((a,b)=>kRank(a)-kRank(b)).slice(0,14))}
+  <div class="secHead"><h2>🥚 Vegetar<small>Med ost, æg og masser af grønt</small></h2><button onclick="tab('v')">Se alle ${COUNT.g}</button></div>
+  ${rail(R.filter(r=>r.c==='g').slice(0,12))}
+  <div class="secHead"><h2>🌱 Grønt & vegansk</h2><button onclick="openList('v',false)">Se alle ${COUNT.v}</button></div>
   ${rail(R.filter(r=>r.c==='v').slice(0,10))}
   <div class="secHead"><h2>🌍 Verdens køkken<small>Internationale favoritter i danske køkkener</small></h2><button onclick="openList('k',false,['int'])">Se alle</button></div>
   ${rail(mains.filter(r=>r.o==='int').slice(0,12))}
   ${favs.size?`<div class="secHead"><h2>❤️ Dine favoritter</h2><button onclick="openWeekSeg('fav')">Se alle</button></div>${rail([...favs].map(id=>BYID[id]).filter(Boolean))}`:''}
-  <p class="footer">Lavet med ❤️ i Danmark · 140 opskrifter</p>`;
+  <p class="footer">Lavet med ❤️ i Danmark · ${R.length} opskrifter</p>`;
   $('homeBody').innerHTML = html;
 }
 function surprise(){
@@ -257,20 +264,21 @@ const FILTERS = {
   vegan:['🌱 Vegansk', r=>r.pr==='vegan'], kod:['🍗 Med kød/fisk', r=>!['vegan','vegetar'].includes(r.pr)],
   hurtig:['⚡ Under 30 min', r=>r.t<=30], let:['🔥 Under 600 kcal', r=>r.kcal<600], let400:['🔥 Under 400 kcal', r=>r.kcal<400],
   born:['👶 Børnevenlig', r=>r.b], suppe:['🍲 Supper & gryder', r=>/^(soup|bowl)/.test(r.look)], pasta:['🍝 Pasta', r=>/^pasta/.test(r.look)],
-  fav:['❤️ Favoritter', r=>favs.has(r.id)]
+  fav:['❤️ Favoritter', r=>favs.has(r.id)], kendt:['⭐ Kendte salater', r=>r.kendt], ost:['🧀 Med ost', r=>/ost|feta|parmesan|mozzarella|halloumi|paneer|cheddar|ricotta|gruyère/.test(r.i)]
 };
 const MODE = {
   k:{t:'Retter', sub:'80 retter danskerne elsker – klassikere og verdens køkken', f:['dk','int','kylling','okse','svin','fisk','veg','hurtig','let','born','fav']},
-  s:{t:'Salater', sub:'30 salater – som tilbehør eller som hele måltidet', f:['vegan','kod','hurtig','let400','fav']},
-  v:{t:'Vegansk', sub:'30 retter helt uden animalske produkter', f:['hurtig','suppe','pasta','let','born','fav']},
-  search:{t:'Søg', sub:'Søg i alle 140 retter – navn, beskrivelse og ingredienser', f:['hurtig','let','veg','born']}
+  s:{t:'Salater', sub:COUNT.s+' salater – de kendte klassikere først', f:['kendt','vegan','kod','hurtig','let400','fav']},
+  g:{t:'Grønt', sub:COUNT.g+' vegetarretter med ost, æg og grønt', f:['hurtig','ost','let','born','fav']},
+  v:{t:'Grønt', sub:COUNT.v+' veganske retter helt uden animalske produkter', f:['hurtig','suppe','pasta','let','born','fav']},
+  search:{t:'Søg', sub:'Søg i alle '+R.length+' retter – navn, beskrivelse og ingredienser', f:['hurtig','let','veg','born']}
 };
 let active = new Set(), query = '';
 function openList(mode, isTab, preset){
   if (!isTab) push();
   listMode = mode; active = new Set(preset||[]); query = '';
   $('listSearch').value = ''; $('listClear').classList.add('hidden');
-  if (TABS.includes(mode)) setTabHighlight(mode);
+  setTabHighlight(tabFor(mode));
   renderList(); show('list');
 }
 function openSearch(){ push(); listMode='search'; active=new Set(); query=''; $('listSearch').value=''; renderList(); show('list'); setTimeout(()=>$('listSearch').focus(),250); }
@@ -281,7 +289,9 @@ function renderList(){
   const m = MODE[listMode];
   $('listTop').innerHTML = stack.length ? `<button class="roundBtn" onclick="goBack()" aria-label="Tilbage">←</button><span></span>` : `<div class="logo">food<b>now</b><i></i></div><button class="roundBtn" onclick="openSettings()" aria-label="Indstillinger">⚙️</button>`;
   $('listTitle').textContent = m.t; $('listSub').textContent = m.sub;
-  $('listSearch').placeholder = listMode==='search' ? 'Søg i alle retter …' : 'Søg i '+m.t.toLowerCase()+' …';
+  const green = listMode==='g'||listMode==='v'; $('greenSeg').classList.toggle('hidden', !green);
+  if (green){ $('segG').setAttribute('aria-selected', listMode==='g'); $('segV').setAttribute('aria-selected', listMode==='v'); }
+  $('listSearch').placeholder = listMode==='search' ? 'Søg i alle retter …' : 'Søg i '+(listMode==='g'?'vegetar':listMode==='v'?'vegansk':m.t.toLowerCase())+' …';
   $('listChips').innerHTML = [...new Set([...m.f, ...active])].map(k=>`<button class="chip" aria-pressed="${active.has(k)}" onclick="toggleChip('${k}')">${FILTERS[k][0]}</button>`).join('');
   renderListGrid();
 }
@@ -293,6 +303,7 @@ function matchesQuery(r){
 }
 function renderListGrid(){
   let l = listMode==='search' ? R : R.filter(r=>r.c===listMode);
+  if (listMode==='s' && !query) l = l.slice().sort((a,b)=>kRank(a)-kRank(b));
   active.forEach(k => { l = l.filter(FILTERS[k][1]); });
   l = l.filter(matchesQuery);
   if (query) l = l.slice().sort((a,b)=> (norm(b.n).includes(query)?1:0)-(norm(a.n).includes(query)?1:0));
@@ -309,7 +320,7 @@ function renderDetail(){
   const planDay = Object.keys(S.plan).find(d => (S.plan[d]||[]).includes(r.id));
   const tot = n !== BASE ? ` · ca. ${Math.round(r.kcal*n/100)*100} kcal i alt` : '';
   const badges = [
-    r.c==='k' ? (r.o==='dk'?'<span class="badge brand">🇩🇰 Dansk klassiker</span>':'<span class="badge">🌍 Verdens køkken</span>') : r.c==='s' ? '<span class="badge green">🥗 Salat</span>' : '',
+    r.c==='k' ? (r.o==='dk'?'<span class="badge brand">🇩🇰 Dansk klassiker</span>':'<span class="badge">🌍 Verdens køkken</span>') : r.c==='s' ? '<span class="badge green">🥗 Salat</span>'+(r.kendt?'<span class="badge brand">⭐ Kendt salat</span>':'') : '',
     r.pr==='vegan'?'<span class="badge green">🌱 Vegansk</span>':r.pr==='vegetar'?'<span class="badge green">🥕 Vegetar</span>':'',
     r.b?'<span class="badge">👶 Børnevenlig</span>':'', r.t<=30?'<span class="badge">⚡ Hurtig</span>':'',
     r.se==='jul'?'<span class="badge brand">🎄 Jul</span>':r.se==='sommer'?'<span class="badge">☀️ Sommer</span>':r.se==='vinter'?'<span class="badge">❄️ Vinter</span>':''
@@ -403,7 +414,7 @@ function openSettings(){
   <div class="servings" style="margin-top:0"><span class="lbl"><b>👥 ${S.defServ} personer</b><small>Bruges når du åbner en ny opskrift</small></span>
     <span class="stepper"><button onclick="setDef(-1)" ${S.defServ<=1?'disabled':''} aria-label="Færre">−</button><output>${S.defServ}</output><button onclick="setDef(1)" ${S.defServ>=12?'disabled':''} aria-label="Flere">+</button></span></div>
   <div class="sheetList"><button onclick="openCredits()">📷 Billedkreditter<small>${Object.keys(IMG).length} fotos</small></button></div>
-  <p class="about"><b>FoodNow</b> · version 1.0<br>140 opskrifter skrevet til FoodNow: 80 danske favoritter, 30 salater og 30 veganske retter.
+  <p class="about"><b>FoodNow</b> · version 1.0<br>${R.length} opskrifter skrevet til FoodNow: ${COUNT.k} danske favoritter, ${COUNT.s} salater, ${COUNT.g} vegetarretter og ${COUNT.v} veganske retter.
   Kalorier er vejledende skøn. Dine favoritter, ugeplan og indkøbsliste gemmes kun på din egen telefon – vi indsamler ingen data.<br><br>Nyd alkohol med måde. Vinforslag er inspiration til voksne.</p>`);
 }
 function openCredits(){
@@ -647,6 +658,7 @@ function ring(i){
 
 /* ---------------- START ---------------- */
 applyTheme();
+$('homeSearchTxt').textContent = `Søg i ${R.length} retter, fx "kylling" eller "laks"`;
 renderHome();
 updateWeekDot();
 document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ if($('sheet').classList.contains('show')) closeSheet(); else if(cur==='cook') exitCook(); else if(cur!=='home' && !TABS.includes(cur)) goBack(); } });
