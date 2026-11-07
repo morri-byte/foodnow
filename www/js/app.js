@@ -21,7 +21,7 @@ const norm = s => String(s||'').toLowerCase().normalize('NFC').trim();
 
 /* ---------------- STATE (gemmes kun på enheden) ---------------- */
 const KEY = 'foodnow_v1';
-const S = { favs:[], plan:{}, shop:[], serv:{}, bought:[], showStaples:false, defServ:4, fridge:[], autoShop:true, auto:[] };
+const S = { favs:[], plan:{}, shop:[], serv:{}, bought:[], showStaples:false, defServ:4, fridge:[], autoShop:true, auto:[], extra:[] };
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch(e) {}
 const favs = new Set(S.favs), bought = new Set(S.bought);
 function save(){
@@ -91,7 +91,7 @@ const pers = id => S.serv[id] || S.defServ || BASE;
 
 /* ---------------- INDKØBS-AFDELINGER ---------------- */
 const AISLES = [
-  ['🥬 Frugt & grønt', /kartof|løg|hvidløg|gulerød|porre|selleri|salat|romaine|rucola|spinat|kål|broccoli|blomkål|squash|aubergine|peberfrugt|agurk(?!er)|^agurk|tomat(?!puré)|cherrytomat|avocado|æble|pære|citron|lime|appelsin|mango|melon|druer|jordbær|granatæble|ananas(?! i tern)|svampe|champignon|asparges|radise|rødbede|græskar|jordskok|fennikel|ingefær|chili(?!flager)|persille|dild|purløg|basilikum|koriander|mynte|estragon|forårsløg|bønnespirer|pak choi|sukkerærter|grønne bønner|majskolbe|søde kartofler|sød kartoffel|perleløg|skalotteløg|karse|timian(?! ,)|frugt/],
+  ['🥬 Frugt & grønt', /banan|kiwi|blomme|clementin|mandarin|nektarin|fersken|hindbær|blåbær|brombær|vindruer|grapefrugt|ananas$|^salat|agurk$|kartof|løg|hvidløg|gulerød|porre|selleri|salat|romaine|rucola|spinat|kål|broccoli|blomkål|squash|aubergine|peberfrugt|agurk(?!er)|^agurk|tomat(?!puré)|cherrytomat|avocado|æble|pære|citron|lime|appelsin|mango|melon|druer|jordbær|granatæble|ananas(?! i tern)|svampe|champignon|asparges|radise|rødbede|græskar|jordskok|fennikel|ingefær|chili(?!flager)|persille|dild|purløg|basilikum|koriander|mynte|estragon|forårsløg|bønnespirer|pak choi|sukkerærter|grønne bønner|majskolbe|søde kartofler|sød kartoffel|perleløg|skalotteløg|karse|timian(?! ,)|frugt/],
   ['🥩 Kød, fisk & fjerkræ', /kød|flæsk|bacon|kylling|høne|(?:^| )and\b|laks|torsk|fisk|sej|rejer|pølse|medister|mørbrad|steg|bøf|okse|svine|kalv|lam|sild|rødspætte|skinke|chorizo|pepperoni|guanciale|muslinger|ryg|spareribs|nakke|schnitzel|roastbeef|leverpostej|entrecote|inderlår|spæk|rogn|tofu/],
   ['🧀 Mejeri, æg & plantedrik', /mælk|fløde|smør|ost|parmesan|mozzarella|feta|yoghurt|creme fraiche|æg|ricotta|pecorino|cheddar|havre|kærnemælk|mayonnaise/],
   ['🍞 Brød', /brød|rugbrød|boller|pita|tortilla|naan|tarteletter|nachos|tacoskaller|cannellonirør/],
@@ -99,7 +99,8 @@ const AISLES = [
 ];
 function aisleOf(name){
   const n = norm(name);
-  if (/frost|frosne|pommes|edamame|^ærter$/.test(n)) return '❄️ Frost';
+  if (/toilet|køkkenrulle|opvask|vaskepulver|vaskemiddel|skyllemiddel|sæbe|tandpasta|tandbørste|shampoo|balsam|deodorant|skraldepose|affaldspose|poser|bleer|vatpinde|plaster|batteri|elpære|lyspære|alufolie|bagepapir|husholdningsfilm|frysepose|rengøring|klude|svamp|kattemad|hundemad|blomster/.test(n)) return '🧴 Husholdning & andet';
+  if (/frost|frosne|pommes|edamame|^ærter$|is\b|isvaffel/.test(n)) return '❄️ Frost';
   if (/havregryn|gryn\b|hakkede tomater|ds |dåse|tun\b|kokosmælk|bønner|kikærter|majs\b|tomatpuré|pesto|glas|bouillon|fond\b|fond |sauce|chutney|eddike|kerner|syltet|ristede løg|oliven|gærflager|sweet chili|asparges$|hvide asparges/.test(n) && !/grønne bønner|grønne asparges/.test(n)) return '🥫 Kolonial & tørvarer';
   for (const [a, re] of AISLES) if (re.test(n)) return a;
   return '🥫 Kolonial & tørvarer';
@@ -346,7 +347,7 @@ function renderDetail(){
     ${r.w && r.w!=='—' ? `<div class="pairing"><div class="pair"><small>🍷 Vinforslag</small><p>${esc(r.w)}</p></div><div class="pair alt"><small>🧃 Alkoholfrit</small><p>${esc(r.a)}</p></div></div>`:''}
     ${r.p?`<p class="tip"><b>💡 Spar tid:</b> ${esc(r.p)}</p>`:''}
     <h2 class="secTitle">Ingredienser <button onclick="toggleShop('${r.id}')">${inShop?'✓ På indkøbslisten':'+ Indkøbsliste'}</button></h2>
-    <ul class="ing">${rc.ing.map(x=>{const a=amount(x,n);return `<li><span class="amt ${n!==BASE&&a?'scaled':''}">${a||'–'}</span><span>${esc(x.name)}${x.staple?'<span class="staple">🏠 basisvare</span>':''}</span></li>`}).join('')}</ul>
+    <ul class="ing">${rc.ing.map(x=>{const a=amount(x,n);return `<li><span class="amt ${n!==BASE&&a?'scaled':''}">${a||'–'}</span><span>${esc(x.name)}${x.staple?`<span class="staple">🏠 basisvare</span><button class="addStaple" onclick="addExtra('${esc(x.name).replace(/'/g,'')}','${esc(r.n).replace(/'/g,'')}')" aria-label="Læg ${esc(x.name)} på indkøbslisten">${(S.extra||[]).some(e=>norm(e.t)===norm(x.name))?'✓':'+ 🛒'}</button>`:''}</span></li>`}).join('')}</ul>
     <p class="note">🔥 Kalorier er et skøn pr. person inkl. tilbehør. 🏠 Basisvarer kommer ikke automatisk på indkøbslisten.</p>
     <h2 class="secTitle">Sådan gør du</h2>
     <ol class="steps">${rc.steps.map(s=>`<li>${esc(s.t)}${s.timer?`<span class="tm">⏱ ${s.timer/60} min</span>`:''}</li>`).join('')}</ol>
@@ -500,23 +501,50 @@ function shopItems(){
       (groups[a]=groups[a]||[]).push({key:id+':'+i, txt:(amount(x,n)?amount(x,n)+' ':'')+x.name, dish:r.n, name:x.name});
     });
   });
+  (S.extra||[]).forEach(e=>{
+    const a = aisleOf(e.t);
+    (groups[a]=groups[a]||[]).push({key:'x:'+e.id, txt:e.t, dish:e.from?('Fra '+e.from):'Egen vare', name:e.t, extra:e.id});
+  });
   return groups;
 }
-const AORDER = ['🥬 Frugt & grønt','🥩 Kød, fisk & fjerkræ','🧀 Mejeri, æg & plantedrik','🍞 Brød','❄️ Frost','🥫 Kolonial & tørvarer'];
+const AORDER = ['🥬 Frugt & grønt','🥩 Kød, fisk & fjerkræ','🧀 Mejeri, æg & plantedrik','🍞 Brød','❄️ Frost','🥫 Kolonial & tørvarer','🧴 Husholdning & andet'];
 function shopHTML(){
   const dishes = S.shop.filter(id=>BYID[id]);
-  if (!dishes.length) return `<div class="empty"><span class="big">🛒</span>Indkøbslisten er tom.<br>Åbn en ret og tryk "Læg på listen" – eller læg hele ugeplanen på.<br><button onclick="tab('k')">Find retter</button></div>`;
+  const have = new Set((S.extra||[]).map(e=>norm(e.t)));
+  const addBox = `<div class="addBox"><label class="search" style="margin:8px 0 6px"><span>➕</span><input id="extraInput" type="text" placeholder="Tilføj vare, fx mælk, 2 l juice, kaffe" autocomplete="off" enterkeyhint="done"
+      onkeydown="if(event.key==='Enter'){addExtra(this.value);}"><button class="addBtn" onclick="addExtra($('extraInput').value)">Tilføj</button></label>
+    <div class="chips" style="margin-top:0">${QUICK.filter(q=>!have.has(q)).map(q=>`<button class="chip" onclick="addExtra('${q}')">+ ${q}</button>`).join('')}</div></div>`;
+  if (!dishes.length && !(S.extra||[]).length) return addBox + `<div class="empty"><span class="big">🛒</span>Indkøbslisten er tom.<br>Skriv dine egne varer ovenfor, åbn en ret og tryk "Læg på listen" – eller læg hele ugeplanen på.<br><button onclick="tab('k')">Find retter</button></div>`;
   const g = shopItems(); let left=0, done=0;
   Object.values(g).flat().forEach(it=>bought.has(it.key)?done++:left++);
-  let h = `<div class="shopDishes">${dishes.map(id=>`<span class="sdPill"><span class="thumb">${dishArt(BYID[id])}</span>${esc(BYID[id].n.split(' ').slice(0,3).join(' '))} · ${pers(id)}p<button onclick="toggleShop('${id}')" aria-label="Fjern ${esc(BYID[id].n)}">✕</button></span>`).join('')}</div>
+  let h = addBox + `<div class="shopDishes">${dishes.map(id=>`<span class="sdPill"><span class="thumb">${dishArt(BYID[id])}</span>${esc(BYID[id].n.split(' ').slice(0,3).join(' '))} · ${pers(id)}p<button onclick="toggleShop('${id}')" aria-label="Fjern ${esc(BYID[id].n)}">✕</button></span>`).join('')}</div>
     <div class="weekActions"><button class="primary" onclick="shareShop()">📤 Del listen</button>${hideBought&&done?`<button onclick="hideBought=false;renderWeek()">👁️ Vis købte (${done})</button>`:`<button onclick="clearBought()">🧹 Ryd købte</button>`}</div>
     <div class="toggleRow"><span>${left} varer tilbage${done?` · ${done} købt`:''}</span><span style="display:flex;align-items:center;gap:8px">Vis basisvarer <button class="switch" role="switch" aria-checked="${!!S.showStaples}" onclick="S.showStaples=!S.showStaples;save();renderWeek()" aria-label="Vis basisvarer"></button></span></div>`;
   AORDER.filter(a=>g[a]).forEach(a=>{
     const items = g[a].filter(it=>!(hideBought && bought.has(it.key))).sort((x,y)=>(bought.has(x.key)-bought.has(y.key)) || x.name.localeCompare(y.name,'da'));
     if (!items.length) return;
-    h += `<div class="aisle"><h3>${a}</h3>${items.map(it=>`<button class="item ${bought.has(it.key)?'bought':''}" onclick="toggleBought('${it.key}')"><span class="check"></span><span class="txt"><span>${esc(it.txt)}</span><small>${esc(it.dish)}</small></span></button>`).join('')}</div>`;
+    h += `<div class="aisle"><h3>${a}</h3>${items.map(it=>it.extra
+      ? `<div class="item ${bought.has(it.key)?'bought':''}"><button class="itemMain" onclick="toggleBought('${it.key}')"><span class="check"></span><span class="txt"><span>${esc(it.txt)}</span><small>✏️ ${esc(it.dish)}</small></span></button><button class="iconX" onclick="rmExtra('${it.extra}')" aria-label="Slet ${esc(it.txt)}">✕</button></div>`
+      : `<button class="item ${bought.has(it.key)?'bought':''}" onclick="toggleBought('${it.key}')"><span class="check"></span><span class="txt"><span>${esc(it.txt)}</span><small>${esc(it.dish)}</small></span></button>`).join('')}</div>`;
   });
   return h;
+}
+/* ---------- egne varer på indkøbslisten ---------- */
+const QUICK = ['mælk','brød','æg','smør','kaffe','bananer','æbler','ost','yoghurt','havregryn','juice','toiletpapir','køkkenrulle','opvasketabs'];
+function addExtra(v, from){
+  const items = String(v||'').split(',').map(x=>x.trim()).filter(Boolean);
+  if (!items.length){ toast('Skriv en vare først'); return; }
+  S.extra = S.extra||[];
+  let added=0;
+  items.forEach(t=>{ if(!S.extra.some(e=>norm(e.t)===norm(t))){ S.extra.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), t, from:from||''}); added++; } });
+  save(); haptic();
+  toast(added ? `🛒 ${added===1?items[0]:added+' varer'} lagt på listen` : 'Står allerede på listen');
+  if (cur==='week'){ const y=window.scrollY; renderWeek(); window.scrollTo(0,y); const i=$('extraInput'); if(i && !from){ i.value=''; i.focus(); } }
+  else if (cur==='detail'){ const y=window.scrollY; renderDetail(); window.scrollTo(0,y); }
+}
+function rmExtra(id){
+  S.extra=(S.extra||[]).filter(e=>e.id!==id); bought.delete('x:'+id); save(); haptic();
+  const y=window.scrollY; renderWeek(); window.scrollTo(0,y);
 }
 function toggleBought(k){ bought.has(k)?bought.delete(k):bought.add(k); save(); haptic(); const y=window.scrollY; renderWeek(); window.scrollTo(0,y); }
 function clearBought(){
@@ -524,9 +552,12 @@ function clearBought(){
   // fjern retter hvor alt er købt
   const before=S.shop.length;
   S.shop = S.shop.filter(id=>{ const r=BYID[id]; if(!r) return false; const need=recipe(r).ing.map((x,i)=>({x,k:id+':'+i})).filter(o=>!o.x.staple||S.showStaples); return !need.every(o=>bought.has(o.k)); });
+  const ex0=(S.extra||[]).length;
+  S.extra=(S.extra||[]).filter(e=>!bought.has('x:'+e.id));
   [...bought].forEach(k=>{ if(!S.shop.includes(k.split(':')[0])) bought.delete(k); });
+  const exGone = ex0 - S.extra.length;
   hideBought = true; save(); renderWeek();
-  const gone=before-S.shop.length; toast(gone?`🧹 ${gone} færdigkøbte retter fjernet – købte varer er skjult`:'🧹 Købte varer er skjult');
+  const gone=before-S.shop.length; toast(gone||exGone?`🧹 ${gone?gone+' færdigkøbte retter':''}${gone&&exGone?' og ':''}${exGone?exGone+' egne varer':''} fjernet`:'🧹 Købte varer er skjult');
 }
 function shareShop(){
   const g=shopItems(); let t='🛒 Indkøbsliste fra FoodNow\n';
@@ -539,7 +570,7 @@ function favHTML(){
   return `<p class="count">${l.length} favoritter</p><div class="grid">${l.map(r=>card(r)).join('')}</div>`;
 }
 function updateWeekDot(){
-  const n = S.shop.filter(id=>BYID[id]).length;
+  const n = S.shop.filter(id=>BYID[id]).length + (S.extra||[]).filter(e=>!bought.has('x:'+e.id)).length;
   const d=$('weekDot'); if(!d) return; d.textContent=n; d.classList.toggle('hidden', !n);
 }
 

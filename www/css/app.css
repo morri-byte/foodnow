@@ -235,6 +235,16 @@ button:active{opacity:.7}
 .switch[aria-checked="true"]{background:var(--green)}
 .switch[aria-checked="true"]::after{transform:translateX(18px)}
 
+/* ---------- egne varer ---------- */
+.addBtn{background:var(--brand);color:#fff;font-weight:800;font-size:.85rem;padding:7px 14px;border-radius:999px;flex:0 0 auto}
+div.item{padding:0}
+.itemMain{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left;padding:10px 0}
+div.item .iconX{width:30px;height:30px;font-size:.8rem}
+div.item.bought .txt span{text-decoration:line-through;color:var(--ink-3)}
+div.item.bought .check{background:var(--green);border-color:var(--green)}
+div.item.bought .check::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:.85rem}
+.addStaple{margin-left:6px;font-size:.68rem;font-weight:800;color:var(--brand);background:var(--brand-soft);padding:2px 8px;border-radius:999px;white-space:nowrap}
+
 /* ---------- køleskab ---------- */
 .fridgeChips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 .fChip{background:var(--brand);color:#fff;padding:7px 12px;border-radius:999px;font-weight:700;font-size:.85rem}
