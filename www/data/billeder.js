@@ -1309,5 +1309,315 @@ window.FN_IMG = {
 "licUrl": "https://creativecommons.org/licenses/by/2.0/",
 "src": "https://www.flickr.com/photos/97844767@N00/4897135759",
 "mod": true
+},
+"g-shakshuka": {
+"f": "billeder/g-shakshuka.jpg",
+"id": "4c827046-67ed-45e8-88f6-a0dd0f725b45",
+"title": "Shakshuka",
+"by": "adactio",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/74105777@N00/12149680454",
+"mod": true
+},
+"g-saag-paneer": {
+"f": "billeder/g-saag-paneer.jpg",
+"id": "ac23555c-687e-4e62-bc62-72e7991431bd",
+"title": "Saag paneer, Mixed Vegetable Curry, Dal - Vegetarian Lunch - Zam Zam",
+"by": "avlxyz",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/10559879@N00/2498132375",
+"mod": true
+},
+"g-halloumiburger": {
+"f": "billeder/g-halloumiburger.jpg",
+"id": "a7094393-c1b3-47e1-8b1b-e696ec677714",
+"title": "Veggie Patch, Halloumi Burger",
+"by": "Sidneiensis",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/104327456@N07/14166363158",
+"mod": true
+},
+"g-bagt-feta-pasta": {
+"f": "billeder/g-bagt-feta-pasta.jpg",
+"id": "3e6fa01c-afec-4b6e-8ac6-1130a11dd313",
+"title": "Thalassino Youvetsi close-up - Hellenic Republic AUD24",
+"by": "avlxyz",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/10559879@N00/4084585105",
+"mod": true
+},
+"g-mac-cheese": {
+"f": "billeder/g-mac-cheese.jpg",
+"id": "f5b19e54-246b-4212-b3e9-b512c765a298",
+"title": "_Real_ macaroni and cheese.",
+"by": "ffg",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/70048083@N00/3285048362",
+"mod": true
+},
+"g-margherita": {
+"f": "billeder/g-margherita.jpg",
+"id": "d7578bf3-cb12-48a6-b379-c2bf16c77d18",
+"title": "Brandi Pizza Margherita",
+"by": "Ozchin",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/95268887@N00/281406925",
+"mod": true
+},
+"g-spanakopita": {
+"f": "billeder/g-spanakopita.jpg",
+"id": "8b66bbca-ed62-4750-a77a-3e2087bef9c7",
+"title": "Spanakopita - Warehouse Deli",
+"by": "avlxyz",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/10559879@N00/2362986739",
+"mod": true
+},
+"g-gnocchi": {
+"f": "billeder/g-gnocchi.jpg",
+"id": "d527e88f-7048-4c77-bd7f-e92ad1200f83",
+"title": "pumpkin gnocchi",
+"by": "telepathicparanoia",
+"lic": "BY-ND 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-nd/2.0/",
+"src": "https://www.flickr.com/photos/22798667@N00/6365353379",
+"mod": false
+},
+"g-frittata": {
+"f": "billeder/g-frittata.jpg",
+"id": "bd46bcc4-2a87-4a89-9f40-e39a06ee29ab",
+"title": "Mmm...spinach feta frittata",
+"by": "jeffreyw",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/7927684@N03/5182567699",
+"mod": true
+},
+"g-kartoffelgratin": {
+"f": "billeder/g-kartoffelgratin.jpg",
+"id": "c59930cf-6e85-4aa5-b3e6-29ef5ca78584",
+"title": "brussels sprout/potato gratin",
+"by": "jeffreyw",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/7927684@N03/4448232361",
+"mod": true
+},
+"g-aspargesrisotto": {
+"f": "billeder/g-aspargesrisotto.jpg",
+"id": "e8069762-e278-4b00-8cf1-a0fcd5f50214",
+"title": "Asparagus Risotto 3",
+"by": "jwillier2",
+"lic": "BY-ND 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-nd/2.0/",
+"src": "https://www.flickr.com/photos/28671532@N04/4666575036",
+"mod": false
+},
+"g-quesadillas": {
+"f": "billeder/g-quesadillas.jpg",
+"id": "08a5a544-91e2-44e8-a16b-9e257184e577",
+"title": "Mmm... breakfast quesadilla with eggs and chorizo",
+"by": "jeffreyw",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/7927684@N03/6045328855",
+"mod": true
+},
+"g-spinattaerte": {
+"f": "billeder/g-spinattaerte.jpg",
+"id": "1dea3834-f25d-4b2c-8fd7-04ac7bb903db",
+"title": "Tarte aux épinards / Spinach tart",
+"by": "balise42",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/22722986@N08/6110308006",
+"mod": true
+},
+"g-paneer-tikka": {
+"f": "billeder/g-paneer-tikka.jpg",
+"id": "bce7f84e-50fb-4e2b-b27c-d3351646a750",
+"title": "Paneer Tikka Masala (2026) 02",
+"by": "Gpkp",
+"lic": "CC BY-SA 4.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=194872485",
+"mod": true
+},
+"g-halloumi-bradepande": {
+"f": "billeder/g-halloumi-bradepande.jpg",
+"id": "2408d14c-f459-44ec-b206-dbe2bc3555ef",
+"title": "Cyprus dish, grilled Halloumi cheese",
+"by": "Cyprus Tourism CH",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/97815838@N04/9507158023",
+"mod": true
+},
+"g-pasta-genovese": {
+"f": "billeder/g-pasta-genovese.jpg",
+"id": "ebde363b-fd93-425d-922e-f77694f94742",
+"title": "penne with basil pesto, green beans, and potatoes",
+"by": "emmadiscovery",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/8174757@N02/6113031911",
+"mod": true
+},
+"g-parmigiana": {
+"f": "billeder/g-parmigiana.jpg",
+"id": "88c9c752-b796-4b1d-bc4f-497251a0f060",
+"title": "melanzane alla parmigiana",
+"by": "fugzu",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/70253321@N00/2370335899",
+"mod": true
+},
+"g-roesti": {
+"f": "billeder/g-roesti.jpg",
+"id": "900ae8fe-2bfe-43c5-8a7d-ef2603e38e4d",
+"title": "Rosti",
+"by": "oatsy40",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/68089229@N06/14477081022",
+"mod": true
+},
+"g-tomatsuppe-grilled-cheese": {
+"f": "billeder/g-tomatsuppe-grilled-cheese.jpg",
+"id": "71844bd8-b7c4-45fc-930b-1fc313733a1d",
+"title": "Mmm... grilled cheese sammich with roasted tomato soup",
+"by": "jeffreyw",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/7927684@N03/5857257367",
+"mod": true
+},
+"g-crepes-spinat": {
+"f": "billeder/g-crepes-spinat.jpg",
+"id": "25a2abc3-bd6e-44c4-a09b-fcff9489b331",
+"title": "Savory Spinach Ricotta Crepes",
+"by": "oonhs",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/51903019@N05/14998189130",
+"mod": true
+},
+"s-cobb": {
+"f": "billeder/s-cobb.jpg",
+"id": "52677cd1-89e6-4bc6-ba3e-495c3f336681",
+"title": "Tonights Cobb Salad",
+"by": "wickenden",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/26667277@N00/394866021",
+"mod": true
+},
+"s-chefsalat": {
+"f": "billeder/s-chefsalat.jpg",
+"id": "18ad407f-2da3-47d3-91f8-e650e68a8767",
+"title": "Lunch At The Olive Grove Restaurant In Linthicum Heights Maryland - Chef's Salad With Chicken & Avocado",
+"by": "France1978",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/51764518@N02/46956882872",
+"mod": true
+},
+"s-panzanella": {
+"f": "billeder/s-panzanella.jpg",
+"id": "62a8ad71-0487-4603-9be9-46fbaceb2a19",
+"title": "Proper Panzanella Salad, Jamies Italian, Leeds",
+"by": "thefoodplace.co.uk",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/41930815@N02/4783195124",
+"mod": true
+},
+"s-fattoush": {
+"f": "billeder/s-fattoush.jpg",
+"id": "4a409091-5d5d-475f-a337-09e539b83022",
+"title": "Fattoush mixed-salad",
+"by": "Arousing Appetites",
+"lic": "CC BY-SA 3.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=52494376",
+"mod": true
+},
+"s-som-tam": {
+"f": "billeder/s-som-tam.jpg",
+"id": "67a0f1da-998f-45e0-b144-f04e3405f3bc",
+"title": "Som tam",
+"by": "WordRidden",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/97844767@N00/2492809178",
+"mod": true
+},
+"s-shopska": {
+"f": "billeder/s-shopska.jpg",
+"id": "991b2493-a04f-474e-a029-5f0d9e8a907f",
+"title": "Shopska salad",
+"by": "Alesist",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/21829280@N02/3681892869",
+"mod": true
+},
+"s-hoensesalat": {
+"f": "billeder/s-hoensesalat.jpg",
+"id": "03d4d392-2664-4f26-b683-2fe52f10158c",
+"title": "DSC00539.JPG",
+"by": "marksdk",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/52585952@N00/2767110215",
+"mod": true
+},
+"s-tunsalat": {
+"f": "billeder/s-tunsalat.jpg",
+"id": "ba6fc430-d365-48bf-87f6-fede357e1220",
+"title": "Dijon-Cilantro Tuna Salad on Whole Grain Bread",
+"by": "thebittenword.com",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/22198928@N00/3833161207",
+"mod": true
+},
+"s-makrelsalat": {
+"f": "billeder/s-makrelsalat.jpg",
+"id": "1fd592b6-2c52-4a35-a0cc-df08d312bf7c",
+"title": "Rugbrød med makrel i tomat",
+"by": "cyclonebill",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://www.flickr.com/photos/23178876@N03/2223507450",
+"mod": true
+},
+"s-wedge": {
+"f": "billeder/s-wedge.jpg",
+"id": "0d86e8be-ab26-48be-9712-faed8ca29727",
+"title": "pizzaria uno wedge salad",
+"by": "goodiesfirst",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/49215102@N00/17115885496",
+"mod": true
+},
+"s-tysk-kartoffelsalat": {
+"f": "billeder/s-tysk-kartoffelsalat.jpg",
+"id": "4c9d8fc9-1963-400f-abb7-2900efa48799",
+"title": "german potato salad NEW",
+"by": "jules:stonesoup",
+"lic": "CC BY 2.0",
+"licUrl": "https://creativecommons.org/licenses/by/2.0/",
+"src": "https://www.flickr.com/photos/58367355@N00/5959935385",
+"mod": true
 }
 };
