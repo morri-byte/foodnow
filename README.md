@@ -1,14 +1,14 @@
 # 🍽️ FoodNow
 
-Danmarks yndlingsretter i én app: **140 opskrifter** fordelt på 80 danske favoritter, 30 salater og 30 veganske retter. Appen har ugeplan, indkøbsliste, kokketilstand og vinforslag.
+Danmarks yndlingsretter i én app: **175 opskrifter** fordelt på 80 danske favoritter, 45 salater (30 kendte klassikere), 20 vegetarretter og 30 veganske retter. Appen har ugeplan, indkøbsliste, kokketilstand og vinforslag.
 
 ## Indhold
 | Fane | Indhold |
 |---|---|
 | **Opdag** | Dagens forslag, 🎲 "Overrask mig", Danmarks top 10, sæsonretter (jul, vinter, sommer), hurtige hverdagsretter og "Hvad har jeg i køleskabet?" |
 | **Retter** | 80 retter: 40 danske klassikere og 40 internationale favoritter. Filtre for dansk/verden, kylling/okse/svin/fisk/vegetar, under 30 min, under 600 kcal, børnevenlig og favoritter |
-| **Salater** | 30 salater, fra kold kartoffelsalat og waldorf til cæsar og tabbouleh |
-| **Vegansk** | 30 retter uden kød, fisk, mejeriprodukter, æg og honning |
+| **Salater** | 45 salater med de kendte først: cæsar, græsk, waldorf, caprese, niçoise, Cobb, hønsesalat, italiensk salat, panzanella, fattoush m.fl. |
+| **Grønt** | 🥚 Vegetar: 20 retter med ost og æg (shakshuka, saag paneer, halloumiburger, margherita ...) · 🌱 Vegansk: 30 retter uden animalske produkter |
 | **Min uge** | Ugeplan med dage (🎲 kan fylde tomme hverdage ud), samlet indkøbsliste sorteret efter supermarkedets afdelinger, og favoritter |
 
 **Hver opskrift har:** valg af antal personer (1-16; mængderne regnes om), kalorier pr. person, sværhedsgrad, 🍷 vinforslag og 🧃 alkoholfrit alternativ, tip til at spare tid, kokketilstand med timer og notifikation, deling og "Prøv også".
@@ -62,6 +62,6 @@ www/index.html          skærme og tab-bar
 www/css/app.css         designsystem (lys og mørk)
 www/js/app.js           logik: navigation, lister, opskrift, ugeplan, indkøb, køleskab, kokketilstand
 www/js/art.js           tegnede ret-illustrationer
-www/data/*.js           de 140 opskrifter (4 personer som grundmængde)
+www/data/*.js           de 175 opskrifter (4 personer som grundmængde)
 ios/                    Xcode-projekt (Capacitor 8, Swift Package Manager)
 ```
