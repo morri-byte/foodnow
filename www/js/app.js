@@ -28,6 +28,9 @@ const IC = {
   heartOn: '<svg class="ic heartOn" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20z"/></svg>',
   back: svg('<path d="M15 5l-7 7 7 7"/>')
 };
+/* rækkefølge i Retter: lækre og populære retter først, tung mad til sidst */
+const FEATURED = ['spaghetti-bolognese','lasagne','butter-chicken','laks-ovn','i-biryani','pad-thai','pizza','tikka-masala','carbonara','a-teriyaki-laks','thai-roed-karry','helstegt-kylling','i-korma','poke-bowl','svamperisotto','a-bibimbap','kyllingespyd','paella','pasta-laks','a-pho','i-tandoori','boeuf-bourguignon','wok-kylling','frikadeller','smoerrebroed','burger','ramen','a-katsu','moussaka','chili-con-carne','tacos','fajitas'];
+const fRank = r => { const i = FEATURED.indexOf(r.id); return r.tung ? 2000 : i<0 ? 1000 + (r.img?0:500) : i; };
 const COUNT = R.reduce((c,r)=>(c[r.c]=(c[r.c]||0)+1,c),{});
 const tabFor = m => m==='g' ? 'v' : (['home','k','s','v','week'].includes(m) ? m : null);
 const BASE = 4;                            // opskrifterne er skrevet til 4 personer
@@ -274,7 +277,7 @@ function renderHome(){
 function weekCard(){
   const planned = Object.values(S.plan).flat().filter(id=>BYID[id]).length;
   if (!planned) return `<div class="howTo"><b>Sådan bruger du FoodNow</b>
-    <ol><li><span>1</span>Find en ret du har lyst til</li><li><span>2</span>Tryk <b>Tilføj til ugeplan</b> og vælg en dag</li><li><span>3</span>Handl ind efter <b>indkøbslisten</b> under Min uge</li></ol></div>`;
+    <ol><li><span>1</span><p>Find en ret du har lyst til</p></li><li><span>2</span><p>Tryk <b>Tilføj til ugeplan</b> og vælg en dag</p></li><li><span>3</span><p>Handl ind efter <b>indkøbslisten</b> under Min uge</p></li></ol></div>`;
   const g = shopItems(); const left = Object.values(g).flat().filter(it=>!bought.has(it.key)).length;
   return `<button class="weekCard" onclick="openWeekSeg('plan')"><span class="wcIcon">🗓️</span><span class="wcTxt"><b>Din uge: ${planned} ${planned===1?'ret':'retter'} planlagt</b><small>🛒 ${left} varer på indkøbslisten</small></span><span class="wcGo">›</span></button>`;
 }
@@ -332,6 +335,7 @@ function matchesQuery(r){
 function renderListGrid(){
   let l = listMode==='search' ? R : (listMode==='k' && (active.has('indisk')||active.has('asiatisk')||active.has('italiensk'))) ? R.filter(r=>r.c!=='s') : R.filter(r=>r.c===listMode);
   if (listMode==='s' && !query) l = l.slice().sort((a,b)=>kRank(a)-kRank(b));
+  else if (!query) l = l.slice().sort((a,b)=>fRank(a)-fRank(b));
   active.forEach(k => { l = l.filter(FILTERS[k][1]); });
   l = l.filter(matchesQuery);
   if (query) l = l.slice().sort((a,b)=> (norm(b.n).includes(query)?1:0)-(norm(a.n).includes(query)?1:0));

@@ -352,3 +352,6 @@ details.more summary small+*{margin-left:0}
 .roundBtn .ic{width:20px;height:20px}
 .heart .ic{width:18px;height:18px;color:var(--ink-2)}
 .ic.heartOn{fill:#e4572e;stroke:#e4572e}
+
+.howTo li p{margin:0;flex:1;line-height:1.4}
+.howTo li p b{color:var(--ink)}
