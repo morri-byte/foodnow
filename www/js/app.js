@@ -189,7 +189,7 @@ function card(r, rank){
       <button class="heart" onclick="event.stopPropagation();toggleFav('${r.id}',this)" aria-label="${fav?'Fjern fra':'Gem i'} favoritter">${fav?'❤️':'🤍'}</button>
       ${r.c==='k'&&r.o==='dk'?'<span class="tagPill">🇩🇰 Klassiker</span>':r.kendt?'<span class="tagPill">⭐ Kendt</span>':r.pr==='vegan'&&r.c!=='v'?'<span class="tagPill">🌱 Vegansk</span>':r.c==='g'?'<span class="tagPill">🥚 Vegetar</span>':''}
     </div>
-    <div class="cBody"><h3>${esc(r.n)}</h3><div class="cMeta"><span>⏱ ${r.t} min</span><span>🔥 ${r.kcal} kcal</span></div></div>
+    <div class="cBody"><h3>${esc(r.n)}</h3><div class="cMeta"><span>⏱ ${r.t} min</span><span>🔥 ${r.kcal} kcal/portion</span></div></div>
   </div>`;
 }
 function rail(list, ranked){ return `<div class="rail">${list.map((r,i)=>card(r, ranked?i+1:0)).join('')}</div>`; }
@@ -221,8 +221,9 @@ function renderHome(){
   <button class="hero" onclick="openDish('${today.id}')">
     <div class="art">${dishArt(today)}</div>
     <div class="heroBody"><div class="kicker">✨ Dagens forslag</div><h2>${esc(today.n)}</h2>
-      <div class="meta"><span>⏱ ${today.t} min</span><span>🔥 ${today.kcal} kcal</span><span>${['','Nem','Mellem','Udfordrende'][today.lv]}</span></div></div>
+      <div class="meta"><span>⏱ ${today.t} min</span><span>🔥 ${today.kcal} kcal pr. portion</span></div></div>
   </button>
+  ${weekCard()}
   <div class="quick">
     <button class="qBtn wide" onclick="surprise()"><span>🎲</span>Overrask mig – find aftensmaden for mig</button>
     <button class="qBtn" onclick="openList('k',false,['hurtig'])"><span>⚡</span>Under 30 min</button>
@@ -247,9 +248,20 @@ function renderHome(){
   ${rail(R.filter(r=>r.c==='v').slice(0,10))}
   <div class="secHead"><h2>🌍 Verdens køkken<small>Internationale favoritter i danske køkkener</small></h2><button onclick="openList('k',false,['int'])">Se alle</button></div>
   ${rail(mains.filter(r=>r.o==='int').slice(0,12))}
+  <div class="secHead"><h2>🇮🇳 Indisk<small>Fra butter chicken til biryani</small></h2><button onclick="openList('k',false,['indisk'])">Se alle</button></div>
+  ${rail(R.filter(r=>r.ku==='indisk'))}
+  <div class="secHead"><h2>🥢 Asiatisk<small>Thai, kinesisk, japansk, koreansk og vietnamesisk</small></h2><button onclick="openList('k',false,['asiatisk'])">Se alle</button></div>
+  ${rail(R.filter(r=>r.ku==='asiatisk' && r.c!=='s'))}
   ${favs.size?`<div class="secHead"><h2>❤️ Dine favoritter</h2><button onclick="openWeekSeg('fav')">Se alle</button></div>${rail([...favs].map(id=>BYID[id]).filter(Boolean))}`:''}
   <p class="footer">Lavet med ❤️ i Danmark · ${R.length} opskrifter</p>`;
   $('homeBody').innerHTML = html;
+}
+function weekCard(){
+  const planned = Object.values(S.plan).flat().filter(id=>BYID[id]).length;
+  if (!planned) return `<div class="howTo"><b>Sådan bruger du FoodNow</b>
+    <ol><li><span>1</span>Find en ret du har lyst til</li><li><span>2</span>Tryk <b>🗓️ Tilføj til ugeplan</b> og vælg dag</li><li><span>3</span>Handl ind efter <b>indkøbslisten</b> under Min uge</li></ol></div>`;
+  const g = shopItems(); const left = Object.values(g).flat().filter(it=>!bought.has(it.key)).length;
+  return `<button class="weekCard" onclick="openWeekSeg('plan')"><span class="wcIcon">🗓️</span><span class="wcTxt"><b>Din uge: ${planned} ${planned===1?'ret':'retter'} planlagt</b><small>🛒 ${left} varer på indkøbslisten</small></span><span class="wcGo">›</span></button>`;
 }
 function surprise(){
   const pool = R.filter(r=>r.c==='k' && r.t<=60);
@@ -265,10 +277,10 @@ const FILTERS = {
   vegan:['🌱 Vegansk', r=>r.pr==='vegan'], kod:['🍗 Med kød/fisk', r=>!['vegan','vegetar'].includes(r.pr)],
   hurtig:['⚡ Under 30 min', r=>r.t<=30], let:['🔥 Under 600 kcal', r=>r.kcal<600], let400:['🔥 Under 400 kcal', r=>r.kcal<400],
   born:['👶 Børnevenlig', r=>r.b], suppe:['🍲 Supper & gryder', r=>/^(soup|bowl)/.test(r.look)], pasta:['🍝 Pasta', r=>/^pasta/.test(r.look)],
-  fav:['❤️ Favoritter', r=>favs.has(r.id)], kendt:['⭐ Kendte salater', r=>r.kendt], ost:['🧀 Med ost', r=>/ost|feta|parmesan|mozzarella|halloumi|paneer|cheddar|ricotta|gruyère/.test(r.i)]
+  fav:['❤️ Favoritter', r=>favs.has(r.id)], kendt:['⭐ Kendte salater', r=>r.kendt], indisk:['🇮🇳 Indisk', r=>r.ku==='indisk'], asiatisk:['🥢 Asiatisk', r=>r.ku==='asiatisk'], ost:['🧀 Med ost', r=>/ost|feta|parmesan|mozzarella|halloumi|paneer|cheddar|ricotta|gruyère/.test(r.i)]
 };
 const MODE = {
-  k:{t:'Retter', sub:'80 retter danskerne elsker – klassikere og verdens køkken', f:['dk','int','kylling','okse','svin','fisk','veg','hurtig','let','born','fav']},
+  k:{t:'Retter', sub:COUNT.k+' retter – danske klassikere og verdens køkken', f:['dk','indisk','asiatisk','int','kylling','okse','svin','fisk','hurtig','let','born','fav']},
   s:{t:'Salater', sub:COUNT.s+' salater – de kendte klassikere først', f:['kendt','vegan','kod','hurtig','let400','fav']},
   g:{t:'Grønt', sub:COUNT.g+' vegetarretter med ost, æg og grønt', f:['hurtig','ost','let','born','fav']},
   v:{t:'Grønt', sub:COUNT.v+' veganske retter helt uden animalske produkter', f:['hurtig','suppe','pasta','let','born','fav']},
@@ -303,7 +315,7 @@ function matchesQuery(r){
   return words.every(w => hay.includes(w));
 }
 function renderListGrid(){
-  let l = listMode==='search' ? R : R.filter(r=>r.c===listMode);
+  let l = listMode==='search' ? R : (listMode==='k' && (active.has('indisk')||active.has('asiatisk'))) ? R.filter(r=>r.c!=='s') : R.filter(r=>r.c===listMode);
   if (listMode==='s' && !query) l = l.slice().sort((a,b)=>kRank(a)-kRank(b));
   active.forEach(k => { l = l.filter(FILTERS[k][1]); });
   l = l.filter(matchesQuery);
@@ -317,16 +329,16 @@ function renderListGrid(){
 function openDish(id){ push(); current = BYID[id]; renderDetail(); show('detail'); }
 function renderDetail(){
   const r = current, rc = recipe(r), n = pers(r.id);
-  const inShop = S.shop.includes(r.id), fav = favs.has(r.id);
+  const fav = favs.has(r.id);
   const planDay = Object.keys(S.plan).find(d => (S.plan[d]||[]).includes(r.id));
-  const tot = n !== BASE ? ` · ca. ${Math.round(r.kcal*n/100)*100} kcal i alt` : '';
-  const badges = [
-    r.c==='k' ? (r.o==='dk'?'<span class="badge brand">🇩🇰 Dansk klassiker</span>':'<span class="badge">🌍 Verdens køkken</span>') : r.c==='s' ? '<span class="badge green">🥗 Salat</span>'+(r.kendt?'<span class="badge brand">⭐ Kendt salat</span>':'') : '',
-    r.pr==='vegan'?'<span class="badge green">🌱 Vegansk</span>':r.pr==='vegetar'?'<span class="badge green">🥕 Vegetar</span>':'',
-    r.b?'<span class="badge">👶 Børnevenlig</span>':'', r.t<=30?'<span class="badge">⚡ Hurtig</span>':'',
-    r.se==='jul'?'<span class="badge brand">🎄 Jul</span>':r.se==='sommer'?'<span class="badge">☀️ Sommer</span>':r.se==='vinter'?'<span class="badge">❄️ Vinter</span>':''
-  ].join('');
-  const similar = R.filter(x=>x.id!==r.id && x.c===r.c && x.pr===r.pr).sort((a,b)=>Math.abs(a.kcal-r.kcal)-Math.abs(b.kcal-r.kcal)).slice(0,8);
+  const inShop = S.shop.includes(r.id);
+  const dayName = planDay ? (planDay==='x' ? 'senere på ugen' : DAYS[+planDay].toLowerCase()) : '';
+  const tags = [
+    r.c==='k' && r.o==='dk' ? '🇩🇰 Dansk klassiker' : '', r.ku==='indisk' ? '🇮🇳 Indisk' : r.ku==='asiatisk' ? '🥢 Asiatisk' : '',
+    r.pr==='vegan' ? '🌱 Vegansk' : r.pr==='vegetar' ? '🥕 Vegetar' : '', r.b ? '👶 Børnevenlig' : '', r.se==='jul' ? '🎄 Jul' : ''
+  ].filter(Boolean);
+  const similar = R.filter(x=>x.id!==r.id && x.c===r.c && (x.pr===r.pr || (r.ku && x.ku===r.ku))).sort((a,b)=>Math.abs(a.kcal-r.kcal)-Math.abs(b.kcal-r.kcal)).slice(0,8);
+  const shown = rc.ing;
   $('detail').innerHTML = `
   <div class="dHero"><div class="art">${dishArt(r)}</div>
     <div class="dHeroBar"><button class="roundBtn" onclick="goBack()" aria-label="Tilbage">←</button>
@@ -334,27 +346,38 @@ function renderDetail(){
       <button class="roundBtn" id="dFav" onclick="toggleFav('${r.id}',this);renderDetail()" aria-label="${fav?'Fjern fra':'Gem i'} favoritter">${fav?'❤️':'🤍'}</button></div></div></div>
   <div class="dSheet">
     <h1>${esc(r.n)}</h1>
+    <p class="dMeta"><span>⏱ ${r.t} min</span><span>🔥 ${r.kcal} kcal pr. portion</span><span>${['','👌 Nem','👍 Mellem','💪 Svær'][r.lv]}</span></p>
     <p class="dDesc">${esc(r.d)}</p>
-    <div class="badges">${badges}</div>
-    <div class="facts">
-      <div class="fact"><small>Tid</small><b>${r.t} min</b></div>
-      <div class="fact"><small>Pr. person</small><b>${r.kcal} kcal</b></div>
-      <div class="fact"><small>Niveau</small><b>${['','Nem','Mellem','Svær'][r.lv]}</b></div>
-    </div>
-    <div class="servings"><span class="lbl"><b>👥 ${n} ${n===1?'person':'personer'}</b><small>${n===BASE?'Opskriftens grundmængde. Ingredienserne regnes om automatisk.':'Omregnet fra 4 personer'+tot}</small></span>
+
+    ${planDay
+      ? `<div class="planned"><div><b>✓ På ugeplanen ${esc(dayName)}</b><small>${inShop?'Ingredienserne er på din indkøbsliste':'Ikke på indkøbslisten'}</small></div>
+          <button onclick="pickDay('${r.id}')">Skift dag</button></div>
+         <button class="cta ghost" onclick="openWeekSeg('shop')">🛒 Se indkøbsliste</button>`
+      : `<button class="cta planCta" onclick="pickDay('${r.id}')">🗓️ Tilføj til ugeplan</button>
+         <p class="ctaHint">Vælg en dag – så kommer ingredienserne automatisk på indkøbslisten.</p>`}
+
+    <div class="servRow"><span>👥 Til <b>${n}</b> ${n===1?'person':'personer'}</span>
       <span class="stepper"><button onclick="serv(-1)" aria-label="Færre personer" ${n<=1?'disabled':''}>−</button><output aria-live="polite">${n}</output><button onclick="serv(1)" aria-label="Flere personer" ${n>=16?'disabled':''}>+</button></span></div>
-    ${r.w && r.w!=='—' ? `<div class="pairing"><div class="pair"><small>🍷 Vinforslag</small><p>${esc(r.w)}</p></div><div class="pair alt"><small>🧃 Alkoholfrit</small><p>${esc(r.a)}</p></div></div>`:''}
-    ${r.p?`<p class="tip"><b>💡 Spar tid:</b> ${esc(r.p)}</p>`:''}
-    <h2 class="secTitle">Ingredienser <button onclick="toggleShop('${r.id}')">${inShop?'✓ På indkøbslisten':'+ Indkøbsliste'}</button></h2>
-    <ul class="ing">${rc.ing.map(x=>{const a=amount(x,n);return `<li><span class="amt ${n!==BASE&&a?'scaled':''}">${a||'–'}</span><span>${esc(x.name)}${x.staple?`<span class="staple">🏠 basisvare</span><button class="addStaple" onclick="addExtra('${esc(x.name).replace(/'/g,'')}','${esc(r.n).replace(/'/g,'')}')" aria-label="Læg ${esc(x.name)} på indkøbslisten">${(S.extra||[]).some(e=>norm(e.t)===norm(x.name))?'✓':'+ 🛒'}</button>`:''}</span></li>`}).join('')}</ul>
-    <p class="note">🔥 Kalorier er et skøn pr. person inkl. tilbehør. 🏠 Basisvarer kommer ikke automatisk på indkøbslisten.</p>
-    <h2 class="secTitle">Sådan gør du</h2>
-    <ol class="steps">${rc.steps.map(s=>`<li>${esc(s.t)}${s.timer?`<span class="tm">⏱ ${s.timer/60} min</span>`:''}</li>`).join('')}</ol>
-    <button class="cta" onclick="startCook()">👩‍🍳 Start madlavning</button>
-    <div class="ctaRow">
-      <button class="cta ghost" onclick="pickDay('${r.id}')">🗓️ ${planDay?(planDay==='x'?'I ugeplanen':DAYS[+planDay]):'Tilføj til ugeplan'}</button>
-      <button class="cta ghost" onclick="toggleShop('${r.id}')">🛒 ${inShop?'På listen ✓':'Læg på listen'}</button>
-    </div>
+
+    <h2 class="secTitle">Ingredienser</h2>
+    <ul class="ing">${shown.map(x=>{const a=amount(x,n);return `<li class="${x.staple?'stapleRow':''}"><span class="amt ${n!==BASE&&a?'scaled':''}">${a||'–'}</span><span>${esc(x.name)}${x.staple?` <button class="addStaple" onclick="addExtra('${esc(x.name).replace(/'/g,'')}','${esc(r.n).replace(/'/g,'')}')" aria-label="Læg ${esc(x.name)} på indkøbslisten">${(S.extra||[]).some(e=>norm(e.t)===norm(x.name))?'✓ på listen':'har du det? +🛒'}</button>`:''}</span></li>`}).join('')}</ul>
+
+    <details class="more" id="stepsBox">
+      <summary>📖 Vis hele opskriften <small>${rc.steps.length} trin</small></summary>
+      <ol class="steps">${rc.steps.map(s=>`<li>${esc(s.t)}${s.timer?`<span class="tm">⏱ ${s.timer/60} min</span>`:''}</li>`).join('')}</ol>
+      <button class="cta" onclick="startCook()">👩‍🍳 Start madlavning trin for trin</button>
+    </details>
+
+    <details class="more">
+      <summary>🍷 Vin, tip og mere</summary>
+      <div class="moreBody">
+        ${r.w && r.w!=='—' ? `<p><b>🍷 Vin:</b> ${esc(r.w)}</p><p><b>🧃 Alkoholfrit:</b> ${esc(r.a)}</p>`:''}
+        ${r.p?`<p><b>💡 Spar tid:</b> ${esc(r.p)}</p>`:''}
+        ${tags.length?`<p class="tagLine">${tags.join(' · ')}</p>`:''}
+        <p class="note">Kalorier er et skøn pr. portion (én person) inkl. tilbehør. Grå varer er basisvarer, de fleste har derhjemme – de kommer ikke automatisk på indkøbslisten.</p>
+      </div>
+    </details>
+
     ${similar.length?`<div class="secHead"><h2>Prøv også</h2></div>${rail(similar)}`:''}
   </div>`;
 }
@@ -377,22 +400,24 @@ function shareDish(){
 /* ---------------- ARK (bottom sheets) ---------------- */
 function openSheet(html){ $('sheet').innerHTML = '<div class="grab"></div>'+html; $('sheet').classList.add('show'); $('scrim').classList.add('show'); }
 function closeSheet(){ $('sheet').classList.remove('show'); $('scrim').classList.remove('show'); }
+/* næste forekomst af hver ugedag (i dag eller senere) – og rækkefølge der starter i dag */
 function weekDates(){
   const now = new Date(); const dow = (now.getDay()+6)%7;
-  return DAYS.map((_,i)=>{ const d=new Date(now); d.setDate(now.getDate()-dow+i); return d; });
+  return DAYS.map((_,i)=>{ const d=new Date(now); d.setDate(now.getDate()+((i-dow+7)%7)); return d; });
 }
+function dayOrder(){ const dow=(new Date().getDay()+6)%7; return DAYS.map((_,k)=>(dow+k)%7); }
 function pickDay(id){
   const dates = weekDates(), today=(new Date().getDay()+6)%7;
   const curDay = Object.keys(S.plan).find(d=>(S.plan[d]||[]).includes(id));
-  openSheet(`<h2>Hvornår skal I have ${esc(BYID[id].n.toLowerCase())}?</h2><div class="sheetList">
-    ${DAYS.map((d,i)=>`<button aria-selected="${curDay===String(i)}" onclick="setDay('${id}','${i}')">${d}${i===today?' · i dag':''}<small>${dates[i].getDate()}/${dates[i].getMonth()+1} · ${(S.plan[i]||[]).length?(S.plan[i]||[]).map(x=>BYID[x]?BYID[x].n:'').join(', ').slice(0,28):'ledig'}</small></button>`).join('')}
+  openSheet(`<h2>🗓️ Hvilken dag?</h2><p class="sheetSub">${esc(BYID[id].n)}${S.autoShop!==false?' · ingredienserne kommer automatisk på indkøbslisten':''}</p><div class="sheetList">
+    ${dayOrder().map(i=>[DAYS[i],i]).map(([d,i])=>`<button aria-selected="${curDay===String(i)}" onclick="setDay('${id}','${i}')">${d}${i===today?' · i dag':''}<small>${dates[i].getDate()}/${dates[i].getMonth()+1} · ${(S.plan[i]||[]).length?(S.plan[i]||[]).map(x=>BYID[x]?BYID[x].n:'').join(', ').slice(0,28):'ledig'}</small></button>`).join('')}
     <button aria-selected="${curDay==='x'}" onclick="setDay('${id}','x')">Senere på ugen<small>uden fast dag</small></button>
     ${curDay?`<button onclick="setDay('${id}',null)" style="color:var(--brand)">Fjern fra ugeplanen</button>`:''}
   </div>`);
 }
 function setDay(id, day){
   Object.keys(S.plan).forEach(d=>{ S.plan[d]=(S.plan[d]||[]).filter(x=>x!==id); });
-  if (day!==null){ (S.plan[day]=S.plan[day]||[]).push(id); const added=autoAdd(id); toast('🗓️ Lagt på '+(day==='x'?'ugeplanen':DAYS[+day].toLowerCase())+(added?' og indkøbslisten':'')); }
+  if (day!==null){ (S.plan[day]=S.plan[day]||[]).push(id); const added=autoAdd(id); toast('✓ '+(day==='x'?'På ugeplanen':DAYS[+day])+(added||S.shop.includes(id)?' · ingredienser på indkøbslisten':'')); }
   else { autoRemove(id); toast('Fjernet fra ugeplanen'); }
   save(); haptic(); closeSheet();
   if (cur==='detail'){ const y=window.scrollY; renderDetail(); window.scrollTo(0,y); }
@@ -441,8 +466,7 @@ function thumbRow(r, extra, removeFn){
     <button class="iconX" onclick="${removeFn}" aria-label="Fjern ${esc(r.n)} fra ugeplanen">✕</button></div>
     <div class="dayTools">
       <button onclick="toggleIngs('${r.id}')">${open?'▾':'▸'} Ingredienser</button>
-      <button onclick="openDish('${r.id}')">📖 Opskrift</button>
-      <button class="${inShop?'on':''}" onclick="toggleShop('${r.id}')">${inShop?'✓ På listen':'🛒 Læg på listen'}</button>
+      ${inShop?'<span class="onList">✓ På indkøbslisten</span>':`<button onclick="toggleShop('${r.id}')">🛒 Læg på indkøbslisten</button>`}
     </div>
     ${open?`<ul class="miniIng">${recipe(r).ing.map(x=>{const a=amount(x,n);return `<li><b>${a||''}</b> ${esc(x.name)}${x.staple?' <span class="staple">🏠</span>':''}</li>`}).join('')}</ul>`:''}`;
 }
@@ -452,10 +476,10 @@ function planHTML(){
   const all = Object.values(S.plan).flat().filter(id=>BYID[id]);
   const kcal = all.reduce((s,id)=>s+BYID[id].kcal,0);
   let h = `<div class="weekActions">
-    <button class="primary" onclick="planToShop()">🛒 Hele ugen på listen</button>
+    ${all.length && all.some(id=>!S.shop.includes(id)) ? `<button class="primary" onclick="planToShop()">🛒 Læg alt på indkøbslisten</button>` : `<button class="primary" onclick="setSeg('shop')">🛒 Se indkøbsliste</button>`}
     <button onclick="fillWeek()">🎲 Fyld tomme hverdage</button></div>
-    <p class="count">${all.length} ${all.length===1?'ret':'retter'} planlagt${all.length?` · gns. ${Math.round(kcal/all.length)} kcal pr. person`:''}</p>`;
-  DAYS.forEach((d,i)=>{
+    <p class="count">${all.length} ${all.length===1?'ret':'retter'} planlagt${all.length?` · gns. ${Math.round(kcal/all.length)} kcal pr. portion`:''}</p>`;
+  dayOrder().forEach(i=>{ const d=DAYS[i];
     const l=(S.plan[i]||[]).filter(id=>BYID[id]);
     h+=`<div class="day"><div class="dayHead ${i===today?'today':''}"><b>${d}${i===today?' · i dag':''}</b><small>${dates[i].getDate()}/${dates[i].getMonth()+1}</small></div>
       ${l.map(id=>thumbRow(BYID[id],'',`setDay('${id}',null)`)).join('')}
