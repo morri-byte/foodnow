@@ -698,5 +698,69 @@
  "s-tysk-kartoffelsalat": [
   "german potato salad",
   "kartoffelsalat bacon"
+ ],
+ "i-biryani": [
+  "chicken biryani",
+  "biryani"
+ ],
+ "i-rogan-josh": [
+  "rogan josh",
+  "lamb curry"
+ ],
+ "i-korma": [
+  "chicken korma",
+  "korma"
+ ],
+ "i-vindaloo": [
+  "vindaloo",
+  "pork vindaloo"
+ ],
+ "i-tandoori": [
+  "tandoori chicken",
+  "tandoori"
+ ],
+ "i-aloo-gobi": [
+  "aloo gobi",
+  "potato cauliflower curry"
+ ],
+ "i-dal-makhani": [
+  "dal makhani",
+  "dal makhni"
+ ],
+ "i-keema": [
+  "keema matar",
+  "keema peas"
+ ],
+ "a-bibimbap": [
+  "bibimbap",
+  "dolsot bibimbap"
+ ],
+ "a-teriyaki-laks": [
+  "teriyaki salmon",
+  "salmon teriyaki rice"
+ ],
+ "a-kung-pao": [
+  "kung pao chicken",
+  "gong bao chicken"
+ ],
+ "a-sursoedt": [
+  "sweet and sour pork",
+  "sweet sour pork"
+ ],
+ "a-pho": [
+  "pho bo",
+  "pho beef noodle soup"
+ ],
+ "a-katsu": [
+  "katsu curry",
+  "chicken katsu curry"
+ ],
+ "a-bulgogi": [
+  "bulgogi",
+  "korean bulgogi beef"
+ ],
+ "a-massaman": [
+  "massaman curry",
+  "massaman beef"
  ]
 }
