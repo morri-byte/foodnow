@@ -73,3 +73,9 @@ FN.push(
  ['wok-kylling','asiatisk'],['pad-thai','asiatisk'],['thai-roed-karry','asiatisk'],['ramen','asiatisk'],['stegt-ris','asiatisk'],['poke-bowl','asiatisk'],['laksefrikadeller-asiatisk','asiatisk'],
  ['v-groen-karry','asiatisk'],['v-pad-thai','asiatisk'],['v-stegt-ris-tofu','asiatisk'],['v-sushi-bowl','asiatisk'],['thai-oksesalat','asiatisk'],['nudelsalat','asiatisk'],['s-som-tam','asiatisk']]
   .forEach(([id,k]) => { const r = FN.find(x => x.id === id); if (r) r.ku = k; });
+/* Italienske retter */
+['spaghetti-bolognese','lasagne','pizza','carbonara','pasta-pesto-kylling','koedboller-tomat','svamperisotto','cannelloni','pasta-laks','g-margherita','g-bagt-feta-pasta','g-gnocchi','g-aspargesrisotto','g-pasta-genovese','g-parmigiana','g-frittata','v-pasta-arrabbiata','v-aglio-olio','v-minestrone','v-bolognese','v-pizza','caprese','s-panzanella','pasta-kylling-flode']
+  .forEach(id => { const r = FN.find(x => x.id === id); if (r) r.ku = 'italiensk'; });
+/* Tung mad/fastfood – vises ikke på forsiden (kan stadig findes under Retter) */
+['hotdog','biksemad','fiskefilet','pulled-pork','spareribs','braendende-kaerlighed','aebleflaesk','medister','krebinetter','karbonader','stegte-sild','pariserboef','oksemoerbrad-bearnaise','a-sursoedt','i-vindaloo','gule-aerter','stegt-flaesk','flaeskesteg','and','groenlangkaal','forloren-hare','svinekoteletter','g-mac-cheese']
+  .forEach(id => { const r = FN.find(x => x.id === id); if (r) r.tung = 1; });
