@@ -12,6 +12,11 @@
 try{var m=localStorage.getItem('foodnow_theme')||'auto';document.documentElement.dataset.theme=m==='auto'?(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'):m;}catch(e){}
 </script>
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="FoodNow">
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>

@@ -29,6 +29,28 @@ Alle opskrifter er skrevet til FoodNow. Ingen tekster eller billeder er kopieret
 Hver ret har sin egen tegnede illustration, som laves af `www/js/art.js` ud fra rettens farver. Den kræver ingen billedfiler og ingen rettigheder.
 **Rigtige fotos senere:** læg billedet i `www/billeder/` og tilføj `img:"billeder/stegt-flaesk.jpg"` på retten i `www/data/*.js`. Så bruges fotoet automatisk.
 
+## Test appen
+
+### På mobilen nu (webversion)
+Åbn **https://foodnow-app.netlify.app** i Safari på iPhone, tryk **Del** og vælg **Føj til hjemmeskærm**. Så åbner FoodNow i fuld skærm med eget ikon.
+(Notifikationer, vibration og "skærmen holdes tændt" virker kun i den rigtige iPhone-app.)
+
+Ny webversion: læg `www/` op igen på Netlify-projektet **foodnow-app**.
+
+### Rigtig iPhone-app via TestFlight (med Mac)
+1. Opret en **Apple Developer**-konto (99 USD/år) på https://developer.apple.com/programs/. Godkendelsen kan tage 1-2 dage.
+2. På Mac'en: installer **Xcode** fra App Store og **Node.js** fra https://nodejs.org.
+3. I Terminal:
+   ```bash
+   git clone https://github.com/morri-byte/foodnow.git
+   cd foodnow
+   npm install
+   npx cap sync ios
+   npx cap open ios
+   ```
+4. **Hurtig test på din egen iPhone (gratis, uden Developer-konto):** tilslut iPhonen med kabel, vælg den øverst i Xcode, vælg dit Apple-ID under *Signing & Capabilities → Team* og tryk ▶︎. På iPhonen: *Indstillinger → Generelt → VPN og enhedsadministration* → stol på udvikleren. (Gratis-versionen virker i 7 dage ad gangen.)
+5. **TestFlight (med Developer-konto):** opret appen i https://appstoreconnect.apple.com (Bundle ID `dk.foodnow.app`). I Xcode: vælg *Any iOS Device* → **Product › Archive** → **Distribute App** → **App Store Connect** → **Upload**. Efter 10-30 min. findes buildet under **TestFlight** i App Store Connect. Tilføj dig selv som tester, og installer appen **TestFlight** fra App Store på iPhonen.
+
 ## Byg og upload til App Store
 Kræver en Mac med Xcode 16+ og en Apple Developer-konto (99 USD om året).
 ```bash
