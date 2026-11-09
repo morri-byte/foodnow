@@ -284,8 +284,7 @@ div.item.bought .check::after{content:'✓';position:absolute;inset:0;display:fl
 /* ---------- toast ---------- */
 .toast{position:fixed;left:50%;bottom:calc(var(--safe-b) + 84px);transform:translate(-50%,16px);opacity:0;z-index:60;background:var(--ink);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:700;font-size:.88rem;transition:all .2s;pointer-events:none;max-width:90vw;text-align:center;box-shadow:var(--shadow-lg)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-body.noTabs .toast{bottom:auto;top:calc(var(--safe-t) + 64px);transform:translate(-50%,-16px)}
-body.noTabs .toast.show{transform:translate(-50%,0)}
+
 
 .footer{text-align:center;color:var(--ink-3);font-size:.8rem;margin:34px 0 10px}
 @media (min-width:700px){ .hero .art{height:320px} .card .art{height:150px} .rail .card{flex-basis:230px} }
@@ -355,3 +354,9 @@ details.more summary small+*{margin-left:0}
 
 .howTo li p{margin:0;flex:1;line-height:1.4}
 .howTo li p b{color:var(--ink)}
+
+/* fast menu: plads i bunden af alle skærme, mørk menu i kokketilstand */
+#cook{padding-bottom:calc(var(--safe-b) + 110px)}
+body.darkScreen .tabs{background:rgba(20,18,16,.92);border-top-color:rgba(255,255,255,.08)}
+body.darkScreen .tabs button{color:#8d867d}
+body.darkScreen .tabs button[aria-current="true"]{color:var(--brand-2)}

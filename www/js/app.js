@@ -177,13 +177,15 @@ const TABS = ['home','k','s','v','week'];
 function show(id){
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id===id));
   cur = id;
-  $('tabs').classList.toggle('hidden', id==='cook' || id==='detail');
-  document.body.classList.toggle('noTabs', id==='cook' || id==='detail');
+  /* menuen i bunden er altid synlig – også på opskrifter og i kokketilstand */
+  $('tabs').classList.remove('hidden');
+  document.body.classList.toggle('darkScreen', id==='cook');
   window.scrollTo(0,0);
   statusBar();
 }
 function setTabHighlight(t){ if(!t) return; TABS.forEach(x => $('t-'+x).setAttribute('aria-current', x===t)); }
 function tab(t){
+  if (cur==='cook') keepAwake(false);
   stack = []; haptic();
   setTabHighlight(t);
   if (t==='home'){ renderHome(); show('home'); }
