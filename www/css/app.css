@@ -360,3 +360,26 @@ details.more summary small+*{margin-left:0}
 body.darkScreen .tabs{background:rgba(20,18,16,.92);border-top-color:rgba(255,255,255,.08)}
 body.darkScreen .tabs button{color:#8d867d}
 body.darkScreen .tabs button[aria-current="true"]{color:var(--brand-2)}
+
+/* ---------- kost & allergier ---------- */
+.rail.empty{display:none}
+.secHead:has(+ .rail.empty){display:none}
+.prefChip{display:flex;align-items:center;gap:8px;width:100%;text-align:left;font-size:.84rem;color:var(--ink-2);background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 16px;margin:4px 0 10px}
+.prefChip b{color:var(--brand)}
+.prefChip span{margin-left:auto;color:var(--ink-3);font-size:1.1rem}
+.prefChip.on{background:var(--green-soft);color:var(--green);font-weight:700;box-shadow:none}
+.prefChip .ic{width:16px;height:16px}
+.dietSeg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:6px}
+.dietSeg button{background:var(--card);box-shadow:var(--shadow);border-radius:var(--r-sm);padding:13px 10px;font-weight:750}
+.dietSeg button[aria-selected="true"]{background:var(--brand);color:#fff}
+.prefList{background:var(--card);box-shadow:var(--shadow);border-radius:var(--radius);padding:4px 16px}
+.prefRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.prefRow:last-child{border-bottom:0}
+.prefRow b{display:block;font-size:.95rem}
+.prefRow small{display:block;color:var(--ink-3);font-size:.76rem}
+.prefRow .switch{flex:0 0 auto}
+.prefNote{color:var(--brand);font-weight:700;font-size:.78rem;text-transform:none;letter-spacing:0}
+.warnBox{display:block;width:100%;text-align:left;background:#fdecea;color:#9b2c1c;border-radius:var(--r-sm);padding:12px 14px;margin:12px 0 0}
+:root[data-theme="dark"] .warnBox{background:#3d2220;color:#ffb4a6}
+.warnBox b{display:block}
+.warnBox small{font-size:.84rem}

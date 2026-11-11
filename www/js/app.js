@@ -28,6 +28,59 @@ const IC = {
   heartOn: '<svg class="ic heartOn" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.4 12 20 12 20z"/></svg>',
   back: svg('<path d="M15 5l-7 7 7 7"/>')
 };
+/* ---------------- KOST & ALLERGIER ----------------
+   Allergener findes automatisk ud fra ingredienslisten (vejledende – tjek altid varedeklarationen). */
+const ALLERGENS = {
+  gluten:  ['Gluten', /(hvede|rugmel|^mel\b|[ ,]mel\b|spsk mel|dl mel|pasta|spaghetti|penne|lasagne|makaroni|fusilli|trofie|cannelloni|pastaskaller|nudler|ramen|brød|toast|tortilla|pita|naan|rasp|panko|couscous|bulgur|filodej|gnocchi|tarteletter|boller|croutons|\bøl\b|soja|hoisin|østerssauce|tacoskaller|nachos|tærtebund)/, /(risnudler|majstortilla|kikærtemel|glutenfri)/],
+  maelk:   ['Mælk/laktose', /(mælk|fløde|smør|(?<!fr)ost\b|parmesan|mozzarella|feta|cheddar|ricotta|halloumi|paneer|gruyère|pecorino|emmentaler|yoghurt|creme fraiche|kærnemælk|tzatziki|raita)/, /(kokosmælk|havremælk|havrefløde|mandelmælk|vegansk|plantebaseret|peanutbutter|jordnøddesmør)/],
+  aeg:     ['Æg', /((^|[^a-zæøå])æg|æggeblomme|mayonnaise|remoulade|æggenudler|pandekage)/, /(vegansk mayonnaise)/],
+  noedder: ['Nødder', /(valnød|hasselnød|cashew|mandel|mandler|pinjekern|pistacie|pekan)/, null],
+  peanuts: ['Jordnødder', /(peanut|jordnød)/, null],
+  fisk:    ['Fisk', /(laks|torsk|\bsej\b|rødspætte|sild|\btun\b|makrel|ansjos|fiskesauce|fisk|rogn|fiskefond)/, null],
+  skaldyr: ['Skaldyr', /(rejer|muslinger|skaldyr|østerssauce|krabbe|hummer|rejepasta)/, /(uden rejepasta)/],
+  sesam:   ['Sesam', /(sesam|tahin)/, null],
+  soja:    ['Soja', /(soja|tofu|edamame|miso)/, null],
+};
+const MEAT_RE = /(kød|kylling|høne|and\b|bacon|skinke|pølse|medister|chorizo|pepperoni|guanciale|spæk|flæsk|ribbe|spareribs|mørbrad|okse|svine|kalv|lam\b|lamme|bøf|hamburgerryg|leverpostej|roastbeef|kalkun|hønsebouillon|oksebouillon|andefond|fond fra stegen)/;
+const PORK_RE = /(svin|bacon|flæsk|skinke|pølse|medister|chorizo|pepperoni|guanciale|spæk|hamburgerryg|leverpostej|spareribs|hakket svine)/;
+const DIETS = { alt:'Spiser alt', pesc:'Pescetar', veg:'Vegetar', vegan:'Vegansk' };
+const allergensOf = r => {
+  if (r._al) return r._al;
+  const lines = r.i.toLowerCase().split(';');
+  return r._al = Object.keys(ALLERGENS).filter(k => { const [,re,ex] = ALLERGENS[k]; return lines.some(l => re.test(l) && !(ex && ex.test(l))); });
+};
+const hasMeat = r => r.i.toLowerCase().split(';').some(l => MEAT_RE.test(l) && !/vegansk|plante|grøntsagsbouillon/.test(l));
+const hasFish = r => allergensOf(r).some(a => a==='fisk' || a==='skaldyr');
+function prefsOf(){ return { diet:S.diet||'alt', avoid:new Set(S.avoid||[]) }; }
+function fits(r){
+  const p = prefsOf();
+  if (p.diet==='vegan' && r.pr!=='vegan') return false;
+  if (p.diet==='veg' && (!(r.pr==='vegetar'||r.pr==='vegan') || hasMeat(r) || hasFish(r))) return false;
+  if (p.diet==='pesc' && (hasMeat(r) || !['fisk','vegetar','vegan'].includes(r.pr))) return false;
+  if (p.avoid.has('svin') && (r.pr==='svin' || r.i.toLowerCase().split(';').some(l=>PORK_RE.test(l)))) return false;
+  const al = allergensOf(r);
+  for (const a of p.avoid) if (a!=='svin' && al.includes(a)) return false;
+  return true;
+}
+function conflicts(r){
+  const p = prefsOf(), out = [];
+  if (p.diet!=='alt' && !fits({...r, i:r.i, _al:r._al}) ) {
+    if (p.diet==='vegan' && r.pr!=='vegan') out.push('ikke vegansk');
+    else if (p.diet==='veg' && (hasMeat(r)||hasFish(r)||!(r.pr==='vegetar'||r.pr==='vegan'))) out.push('ikke vegetarisk');
+    else if (p.diet==='pesc' && hasMeat(r)) out.push('indeholder kød');
+  }
+  if (p.avoid.has('svin') && (r.pr==='svin' || r.i.toLowerCase().split(';').some(l=>PORK_RE.test(l)))) out.push('svinekød');
+  allergensOf(r).forEach(a => { if (p.avoid.has(a)) out.push(ALLERGENS[a][0].toLowerCase()); });
+  return out;
+}
+const prefsActive = () => (S.diet && S.diet!=='alt') || (S.avoid||[]).length>0;
+function prefsLabel(){
+  const parts = [];
+  if (S.diet && S.diet!=='alt') parts.push(DIETS[S.diet]);
+  (S.avoid||[]).forEach(a => parts.push(a==='svin' ? 'uden svinekød' : 'uden '+ALLERGENS[a][0].toLowerCase()));
+  return parts.join(' · ');
+}
+
 /* rækkefølge i Retter: lækre og populære retter først, tung mad til sidst */
 const FEATURED = ['spaghetti-bolognese','lasagne','butter-chicken','laks-ovn','i-biryani','pad-thai','pizza','tikka-masala','carbonara','a-teriyaki-laks','thai-roed-karry','helstegt-kylling','i-korma','poke-bowl','svamperisotto','a-bibimbap','kyllingespyd','paella','pasta-laks','a-pho','i-tandoori','boeuf-bourguignon','wok-kylling','frikadeller','smoerrebroed','burger','ramen','a-katsu','moussaka','chili-con-carne','tacos','fajitas'];
 const fRank = r => { const i = FEATURED.indexOf(r.id); return r.tung ? 2000 : i<0 ? 1000 + (r.img?0:500) : i; };
@@ -215,7 +268,7 @@ function card(r, rank){
     <div class="cBody"><h3>${esc(r.n)}</h3><div class="cMeta"><span>${IC.clock} ${r.t} min</span><span>${IC.flame} ${r.kcal} kcal/portion</span></div></div>
   </div>`;
 }
-function rail(list, ranked){ return `<div class="rail">${list.map((r,i)=>card(r, ranked?i+1:0)).join('')}</div>`; }
+function rail(list, ranked, all){ const l = all ? list : list.filter(fits); return `<div class="rail${l.length?'':' empty'}">${l.map((r,i)=>card(r, ranked?i+1:0)).join('')}</div>`; }
 function toggleFav(id, btn){
   favs.has(id) ? favs.delete(id) : favs.add(id); save(); haptic();
   const on = favs.has(id);
@@ -239,7 +292,9 @@ function renderHome(){
   const h = new Date().getHours();
   $('greet').textContent = (h<5?'God nat':h<10?'Godmorgen':h<12?'God formiddag':h<18?'God eftermiddag':'Godaften');
   const light = r => !r.tung;
-  const pool = R.filter(r=>light(r) && r.img && r.kcal<=750 && r.c!=='s');
+  let pool = R.filter(r=>light(r) && r.img && r.kcal<=750 && r.c!=='s' && fits(r));
+  if (!pool.length) pool = R.filter(fits);
+  if (!pool.length) pool = R;
   const today = pool[dayIndex() % pool.length];
   const BURGERS = ['burger','g-halloumiburger','v-boennebuffer'].map(id=>BYID[id]).filter(Boolean);
   const italian = R.filter(r=>r.ku==='italiensk' && light(r) && r.c!=='s' && r.img);
@@ -247,6 +302,7 @@ function renderHome(){
   const asian = R.filter(r=>r.ku==='asiatisk' && light(r) && r.c!=='s');
   const healthy = R.filter(r=>light(r) && r.kcal<=550 && r.c!=='s' && r.img).sort((a,b)=>a.kcal-b.kcal).slice(0,14);
   let html = `
+  <button class="prefChip ${prefsActive()?'on':''}" onclick="openPrefs()">${prefsActive()?IC.check+' Tilpasset: '+esc(prefsLabel()):'Har du allergier eller spiser vegetar? <b>Tilpas forslag</b>'}<span>›</span></button>
   <button class="hero" onclick="openDish('${today.id}')">
     <div class="art">${dishArt(today)}</div>
     <div class="heroBody"><div class="kicker">Dagens forslag</div><h2>${esc(today.n)}</h2>
@@ -272,7 +328,7 @@ function renderHome(){
   ${rail(R.filter(r=>r.c==='g'&&light(r)).slice(0,12))}
   <div class="secHead"><h2>Asiatisk<small>Thai, japansk, koreansk og vietnamesisk</small></h2><button onclick="openList('k',false,['asiatisk'])">Se alle</button></div>
   ${rail(asian)}
-  ${favs.size?`<div class="secHead"><h2>Dine favoritter</h2><button onclick="openWeekSeg('fav')">Se alle</button></div>${rail([...favs].map(id=>BYID[id]).filter(Boolean))}`:''}
+  ${favs.size?`<div class="secHead"><h2>Dine favoritter</h2><button onclick="openWeekSeg('fav')">Se alle</button></div>${rail([...favs].map(id=>BYID[id]).filter(Boolean),false,true)}`:''}
   <p class="footer">FoodNow · ${R.length} opskrifter</p>`;
   $('homeBody').innerHTML = html;
 }
@@ -284,7 +340,9 @@ function weekCard(){
   return `<button class="weekCard" onclick="openWeekSeg('plan')"><span class="wcIcon">🗓️</span><span class="wcTxt"><b>Din uge: ${planned} ${planned===1?'ret':'retter'} planlagt</b><small>🛒 ${left} varer på indkøbslisten</small></span><span class="wcGo">›</span></button>`;
 }
 function surprise(){
-  const pool = R.filter(r=>r.c!=='s' && r.t<=60 && !r.tung);
+  let pool = R.filter(r=>r.c!=='s' && r.t<=60 && !r.tung && fits(r));
+  if (!pool.length) pool = R.filter(fits);
+  if (!pool.length){ toast('Ingen retter passer til dine kostvalg'); return; }
   const r = pool[Math.floor(Math.random()*pool.length)];
   haptic(); openDish(r.id); toast('🎲 Hvad med '+r.n.toLowerCase()+'?');
 }
@@ -340,8 +398,10 @@ function renderListGrid(){
   else if (!query) l = l.slice().sort((a,b)=>fRank(a)-fRank(b));
   active.forEach(k => { l = l.filter(FILTERS[k][1]); });
   l = l.filter(matchesQuery);
+  const hidden = active.has('fav') ? 0 : l.filter(r=>!fits(r)).length;
+  if (!active.has('fav')) l = l.filter(fits);
   if (query) l = l.slice().sort((a,b)=> (norm(b.n).includes(query)?1:0)-(norm(a.n).includes(query)?1:0));
-  $('listCount').textContent = l.length + (l.length===1?' ret':' retter');
+  $('listCount').innerHTML = esc(l.length + (l.length===1?' ret':' retter')) + (hidden?` <button class="prefNote" onclick="openPrefs()">· ${hidden} skjult pga. ${esc(prefsLabel())} ›</button>`:'');
   $('listGrid').innerHTML = l.length ? l.map(r=>card(r)).join('') :
     `<div class="empty"><span class="big">🍽️</span>Ingen retter matcher${query?` "${esc(query)}"`:''}.<br><button onclick="active.clear();clearListSearch();renderList()">Nulstil filtre</button></div>`;
 }
@@ -358,7 +418,7 @@ function renderDetail(){
     r.c==='k' && r.o==='dk' ? '🇩🇰 Dansk klassiker' : '', r.ku==='indisk' ? '🇮🇳 Indisk' : r.ku==='asiatisk' ? '🥢 Asiatisk' : '',
     r.pr==='vegan' ? '🌱 Vegansk' : r.pr==='vegetar' ? '🥕 Vegetar' : '', r.b ? '👶 Børnevenlig' : '', r.se==='jul' ? '🎄 Jul' : ''
   ].filter(Boolean);
-  const similar = R.filter(x=>x.id!==r.id && !x.tung && x.c===r.c && (x.pr===r.pr || (r.ku && x.ku===r.ku))).sort((a,b)=>Math.abs(a.kcal-r.kcal)-Math.abs(b.kcal-r.kcal)).slice(0,8);
+  const similar = R.filter(x=>x.id!==r.id && !x.tung && fits(x) && x.c===r.c && (x.pr===r.pr || (r.ku && x.ku===r.ku))).sort((a,b)=>Math.abs(a.kcal-r.kcal)-Math.abs(b.kcal-r.kcal)).slice(0,8);
   const shown = rc.ing;
   $('detail').innerHTML = `
   <div class="dHero"><div class="art">${dishArt(r)}</div>
@@ -369,6 +429,7 @@ function renderDetail(){
     <h1>${esc(r.n)}</h1>
     <p class="dMeta"><span>${IC.clock} ${r.t} min</span><span>${IC.flame} ${r.kcal} kcal pr. portion</span><span>${IC.level} ${['','Nem','Mellem','Svær'][r.lv]}</span></p>
     <p class="dDesc">${esc(r.d)}</p>
+    ${(()=>{ const c=conflicts(r); return c.length?`<button class="warnBox" onclick="openPrefs()"><b>⚠️ Passer ikke til dine kostvalg</b><small>Indeholder: ${esc(c.join(', '))}</small></button>`:''; })()}
 
     ${planDay
       ? `<div class="planned"><div><b>${IC.check} På ugeplanen ${esc(dayName)}</b><small>${inShop?'Ingredienserne er på din indkøbsliste':'Ikke på indkøbslisten'}</small></div>
@@ -395,6 +456,7 @@ function renderDetail(){
         ${r.w && r.w!=='—' ? `<p><b>Vin:</b> ${esc(r.w)}</p><p><b>Alkoholfrit:</b> ${esc(r.a)}</p>`:''}
         ${r.p?`<p><b>Spar tid:</b> ${esc(r.p)}</p>`:''}
         ${tags.length?`<p class="tagLine">${tags.join(' · ')}</p>`:''}
+        <p><b>Allergener:</b> ${allergensOf(r).length?esc(allergensOf(r).map(a=>ALLERGENS[a][0]).join(', ')):'ingen af de almindelige fundet'} <span class="note">(vejledende)</span></p>
         <p class="note">Kalorier er et skøn pr. portion (én person) inkl. tilbehør. Grå varer er basisvarer, som de fleste har derhjemme. Tryk + for at sætte dem på indkøbslisten.</p>
       </div>
     </details>
@@ -447,6 +509,8 @@ function setDay(id, day){
 function openSettings(){
   const m=themeMode;
   openSheet(`<h2>Indstillinger</h2>
+  <p class="count">Kost & allergier</p>
+  <div class="sheetList"><button onclick="openPrefs()">🥗 Kost & allergier<small>${prefsActive()?esc(prefsLabel()):'Ingen valgt'} ›</small></button></div>
   <p class="count">Udseende</p>
   <div class="sheetList">
     <button aria-selected="${m==='auto'}" onclick="setTheme('auto')">🌓 Automatisk<small>følger telefonen</small></button>
@@ -462,6 +526,36 @@ function openSettings(){
   <div class="sheetList"><button onclick="openCredits()">📷 Billedkreditter<small>›</small></button></div>
   <p class="about"><b>FoodNow</b> · version 1.0<br>${R.length} opskrifter skrevet til FoodNow: ${COUNT.k} danske favoritter, ${COUNT.s} salater, ${COUNT.g} vegetarretter og ${COUNT.v} veganske retter.
   Kalorier er vejledende skøn. Dine favoritter, ugeplan og indkøbsliste gemmes kun på din egen telefon – vi indsamler ingen data.<br><br>Nyd alkohol med måde. Vinforslag er inspiration til voksne.</p>`);
+}
+function openPrefs(){
+  const d = S.diet||'alt', av = new Set(S.avoid||[]);
+  const tog = (k,label,sub) => `<div class="prefRow"><span><b>${label}</b>${sub?`<small>${sub}</small>`:''}</span><button class="switch" role="switch" aria-checked="${av.has(k)}" onclick="toggleAvoid('${k}')" aria-label="${label}"></button></div>`;
+  const shown = R.filter(fits).length;
+  openSheet(`<h2>Kost & allergier</h2>
+  <p class="sheetSub">Forslag og lister tilpasses automatisk. Viser nu <b>${shown}</b> af ${R.length} retter.</p>
+  <p class="count">Hvad spiser du?</p>
+  <div class="dietSeg">${Object.entries(DIETS).map(([k,l])=>`<button aria-selected="${d===k}" onclick="setDiet('${k}')">${l}</button>`).join('')}</div>
+  <p class="count">Undgå / allergier</p>
+  <div class="prefList">
+    ${tog('gluten','Gluten','hvede, pasta, brød, soja m.m.')}
+    ${tog('maelk','Mælk / laktose','fløde, smør, ost, yoghurt')}
+    ${tog('aeg','Æg','også mayonnaise og remoulade')}
+    ${tog('noedder','Nødder','mandler, valnødder, cashew m.m.')}
+    ${tog('peanuts','Jordnødder','')}
+    ${tog('fisk','Fisk','')}
+    ${tog('skaldyr','Skaldyr','rejer, muslinger')}
+    ${tog('sesam','Sesam','også tahin')}
+    ${tog('soja','Soja','også tofu og edamame')}
+    ${tog('svin','Svinekød','bacon, skinke, pølser m.m.')}
+  </div>
+  <p class="about">Allergener findes automatisk ud fra opskrifternes ingredienser og er vejledende. Ved allergi skal du altid tjekke varedeklarationen på de varer, du køber.</p>
+  <button class="cta" onclick="closeSheet()">Færdig</button>`);
+}
+function setDiet(k){ S.diet=k; save(); haptic(); afterPrefs(); }
+function toggleAvoid(k){ const a=new Set(S.avoid||[]); a.has(k)?a.delete(k):a.add(k); S.avoid=[...a]; save(); haptic(); afterPrefs(); }
+function afterPrefs(){
+  const sc = $('sheet').scrollTop; openPrefs(); $('sheet').scrollTop = sc;
+  if (cur==='home') renderHome(); else if (cur==='list') renderListGrid(); else if (cur==='detail') { const y=window.scrollY; renderDetail(); window.scrollTo(0,y); } else if (cur==='fridge') renderFridge();
 }
 function openCredits(){
   const l = R.filter(r=>IMG[r.id]);
@@ -521,13 +615,14 @@ function autoRemove(id){
 }
 function randomDish(exclude){
   const used = new Set(exclude), prs = Object.values(S.plan).flat().map(id=>BYID[id]&&BYID[id].pr);
-  let pool = R.filter(r=>r.c!=='s' && !used.has(r.id) && r.t<=60);
+  let pool = R.filter(r=>r.c!=='s' && !used.has(r.id) && r.t<=60 && fits(r) && !r.tung);
+  if (!pool.length) pool = R.filter(r=>r.c!=='s' && fits(r));
   const last = prs[prs.length-1]; const p2 = pool.filter(r=>r.pr!==last); if (p2.length) pool=p2;
   return pool[Math.floor(Math.random()*pool.length)];
 }
-function suggestDay(i){ const r=randomDish(Object.values(S.plan).flat()); (S.plan[i]=S.plan[i]||[]).push(r.id); autoAdd(r.id); save(); haptic(); renderWeek(); toast('🎲 '+DAYS[i]+': '+r.n); }
+function suggestDay(i){ const r=randomDish(Object.values(S.plan).flat()); if(!r){ toast('Ingen retter passer til dine kostvalg'); return; } (S.plan[i]=S.plan[i]||[]).push(r.id); autoAdd(r.id); save(); haptic(); renderWeek(); toast('🎲 '+DAYS[i]+': '+r.n); }
 function fillWeek(){
-  let n=0; for(let i=0;i<5;i++){ if(!(S.plan[i]||[]).length){ const r=randomDish(Object.values(S.plan).flat()); (S.plan[i]=S.plan[i]||[]).push(r.id); autoAdd(r.id); n++; } }
+  let n=0; for(let i=0;i<5;i++){ if(!(S.plan[i]||[]).length){ const r=randomDish(Object.values(S.plan).flat()); if(!r) break; (S.plan[i]=S.plan[i]||[]).push(r.id); autoAdd(r.id); n++; } }
   save(); haptic('success'); renderWeek(); toast(n?`🎲 ${n} hverdage fyldt ud – byt gerne om`:'Hverdagene er allerede planlagt');
 }
 function planToShop(){
@@ -627,7 +722,7 @@ function renderFridge(){
   $('fridgeChips').innerHTML = S.fridge.map((x,i)=>`<button class="fChip" onclick="rmFridge(${i})" aria-label="Fjern ${esc(x)}">${esc(x)} ✕</button>`).join('') +
     FRIDGE_SUG.filter(x=>!S.fridge.includes(x)).slice(0, S.fridge.length?8:18).map(x=>`<button class="fChip sug" onclick="addFridge('${x}')">+ ${x}</button>`).join('');
   if (!S.fridge.length){ $('fridgeResults').innerHTML = `<div class="empty"><span class="big">🧊</span>Tilføj et par råvarer, fx <b>kylling</b> og <b>ris</b>.</div>`; return; }
-  const res = R.map(r=>{
+  const res = R.filter(fits).map(r=>{
     const need = recipe(r).ing.filter(x=>!x.staple);
     const have = need.filter(x=>{ const nm=norm(x.name), w=nm.split(/[ ,]/)[0]; return S.fridge.some(f=>nm.includes(f) || (w.length>=4 && f.includes(w))); });
     return {r, need, have, score: have.length/need.length + have.length*.05};
