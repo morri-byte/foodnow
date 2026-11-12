@@ -56,12 +56,6 @@ FN.push(
  i:"500 g hakket svinekød;1 tsk salt;1 æg, pisket;1 dl rasp;40 g smør;300 g ærter og gulerødder (frost);30 g smør;3 spsk mel;4 dl mælk;1 kg kartofler",
  s:"Kog kartoflerne.~20;Form 4 flade bøffer, vend dem i æg og rasp.;Steg karbonaderne gyldne i smør.~10;Lav en hvid sovs af smør, mel og mælk. Kom ærter og gulerødder i og varm igennem.~5;Server karbonaderne med kartofler og ærter og gulerødder."},
 
-{id:"medister",n:"Medisterpølse med stuvet hvidkål",c:"k",o:"dk",pr:"svin",t:40,kcal:880,lv:1,b:1,se:"vinter",pop:20,look:"plate:#9c4a2f,#efe6c8,#f2e4bf",
- d:"Stegt medister, stuvet hvidkål og kogte kartofler.",
- w:"Beaujolais eller en juleøl",a:"Rød saft med danskvand",p:"Snit hvidkålen aftenen før.",
- i:"600 g medisterpølse;½ hvidkål, snittet;30 g smør;3 spsk mel;5 dl mælk;½ tsk revet muskat;1 kg kartofler;salt og peber",
- s:"Kog kartoflerne.~20;Kog hvidkålen i letsaltet vand og lad den dryppe af.~6;Steg medisterpølsen ved middel varme, vend den jævnligt.~18;Lav en hvid sovs af smør, mel og mælk, krydr med muskat, salt og peber.;Vend kålen i sovsen.;Server pølsen med stuvet kål og kartofler. Sennep til."},
-
 {id:"oksesteg",n:"Gammeldags grydestegt oksesteg",c:"k",o:"dk",pr:"okse",t:150,kcal:820,lv:2,b:1,se:"vinter",pop:25,look:"plate:#6b3a22,#f2e4bf,#7d2b4f",
  d:"Langtidsstegt oksesteg med skysovs, kartofler og surt.",
  w:"Bordeaux eller Cabernet Sauvignon",a:"Solbærsaft med danskvand",p:"Steg den dagen før – den bliver kun bedre genopvarmet i sovsen.",
@@ -133,12 +127,6 @@ FN.push(
  w:"Hvid Bourgogne",a:"Æblemost",p:"Kødet kan koges dagen før.",
  i:"800 g kalvebov i tern;1,5 l vand;2 gulerødder;1 porre;1 tsk salt;250 g grønne asparges;40 g smør;4 spsk mel;1 dl fløde;citron;1 kg kartofler",
  s:"Kog kalvekødet med salt og grove grøntsager under låg.~60;Kog kartoflerne.~20;Si suppen og kog skårne gulerødder og asparges møre i den.~5;Lav opbagning af smør og mel og spæd op med 7 dl suppe og fløde.;Kom kød og grøntsager i sovsen. Smag til med citron.;Server med kartofler og persille."},
-
-{id:"gule-aerter",n:"Gule ærter med flæsk og pølse",c:"k",o:"dk",pr:"svin",t:120,kcal:850,lv:2,b:1,se:"vinter",pop:41,look:"soup:#e3c04a,#c9874a,#9c4a2f",
- d:"Tyk ærtesuppe med saltet flæsk, medister og rugbrød.",
- w:"Snaps og en mørk øl",a:"Hjemmelavet kold te",p:"Læg ærterne i blød aftenen før.",
- i:"500 g gule flækærter;2 l vand;500 g letsaltet flæsk;300 g medisterpølse;2 gulerødder;1 selleri;2 porrer;1 løg;1 tsk timian;rugbrød;sennep",
- s:"Kog ærterne i vandet, skum af undervejs.~45;Kog flæsket for sig.~60;Kom grøntsager i tern og timian i suppen.~30;Kog medisterpølsen i suppen de sidste 20 minutter.~20;Server suppen først og kød, sennep og rugbrød bagefter."},
 
 {id:"tarteletter",n:"Tarteletter med høns i asparges",c:"k",o:"dk",pr:"kylling",t:40,kcal:560,lv:1,b:1,se:"",pop:16,look:"bowl:#e8c070,#f5efe0,#a8c66c",
  d:"Sprøde tarteletter fyldt med flødet høns og asparges.",
@@ -223,12 +211,6 @@ FN.push(
  w:"Chenin Blanc",a:"Æblemost",p:"Suppen kan fryses.",
  i:"1 kg kartofler;3 porrer;1 løg;30 g smør;1,2 l bouillon;1 dl fløde;150 g bacon i tern;purløg;brød",
  s:"Svits løg og porrer i smør.~5;Tilsæt kartofler i tern og bouillon. Kog til alt er mørt.~20;Steg baconen sprød.~8;Blend suppen og rør fløden i. Smag til.;Server med bacon, purløg og brød."},
-
-{id:"hotdog",n:"Ristet hotdog med det hele",c:"k",o:"dk",pr:"svin",t:20,kcal:690,lv:1,b:1,se:"",pop:17,look:"sandwich:#e8b04a,#9c4a2f,#f7e08a",
- d:"Pølsevognens klassiker: ristede løg, rå løg, remoulade og agurk.",
- w:"Kold pilsner",a:"Cocio eller sodavand",p:"Skær agurkesalat og hak løg i forvejen.",
- i:"8 røde eller ristede pølser;8 hotdogbrød;ketchup;sennep;remoulade;ristede løg;1 løg, hakket;syltede agurker",
- s:"Steg pølserne på panden eller grill.~8;Lun brødene i ovnen.~4;Fyld brødene med pølse og striber af ketchup, sennep og remoulade.;Drys med ristede og rå løg og top med agurker."},
 
 {id:"sprode-kyllingelaar",n:"Kyllingelår med kartoffelbåde og agurkesalat",c:"k",o:"dk",pr:"kylling",t:50,kcal:760,lv:1,b:1,se:"",pop:8,look:"plate:#c9853f,#e8b04a,#a8c66c",
  d:"Den danske 'stegt kylling' – sprødt skind og ovnkartofler.",

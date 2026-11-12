@@ -90,16 +90,6 @@ window.FN_IMG = {
 "src": "https://www.flickr.com/photos/40132124@N00/10675997564",
 "mod": true
 },
-"medister": {
-"f": "billeder/medister.jpg",
-"id": "6b7ae7d5-62d1-441d-a267-9072dddba58c",
-"title": "Medisterpølse",
-"by": "cyclonebill",
-"lic": "CC BY-SA 2.0",
-"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
-"src": "https://www.flickr.com/photos/23178876@N03/2223215038",
-"mod": true
-},
 "oksesteg": {
 "f": "billeder/oksesteg.jpg",
 "id": "17d87af5-ad5e-4ffa-b927-1b085c7b04f1",
@@ -208,16 +198,6 @@ window.FN_IMG = {
 "lic": "CC BY-SA 2.0",
 "licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
 "src": "https://www.flickr.com/photos/23178876@N03/11273576303",
-"mod": true
-},
-"gule-aerter": {
-"f": "billeder/gule-aerter.jpg",
-"id": "efc44e81-3ea4-4232-9902-36ec2bde58ec",
-"title": "Yellow Split Pea Soup",
-"by": "Qfamily",
-"lic": "CC BY 2.0",
-"licUrl": "https://creativecommons.org/licenses/by/2.0/",
-"src": "https://www.flickr.com/photos/98545783@N00/2213950065",
 "mod": true
 },
 "svinekoteletter": {
@@ -349,16 +329,6 @@ window.FN_IMG = {
 "licUrl": "https://creativecommons.org/licenses/by-nd/2.0/",
 "src": "https://www.flickr.com/photos/21998487@N04/4779502992",
 "mod": false
-},
-"hotdog": {
-"f": "billeder/hotdog.jpg",
-"id": "da0bd29c-d529-42d1-97b1-accad8be5d56",
-"title": "Danish hot dog",
-"by": "City Foodsters",
-"lic": "CC BY 2.0",
-"licUrl": "https://creativecommons.org/licenses/by/2.0/",
-"src": "https://www.flickr.com/photos/89060048@N03/18675680994",
-"mod": true
 },
 "sprode-kyllingelaar": {
 "f": "billeder/sprode-kyllingelaar.jpg",
