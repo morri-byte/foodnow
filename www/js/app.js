@@ -394,8 +394,9 @@ function matchesQuery(r){
 }
 function renderListGrid(){
   let l = listMode==='search' ? R : (listMode==='k' && (active.has('indisk')||active.has('asiatisk')||active.has('italiensk'))) ? R.filter(r=>r.c!=='s') : R.filter(r=>r.c===listMode);
-  if (listMode==='s' && !query) l = l.slice().sort((a,b)=>kRank(a)-kRank(b));
-  else if (!query) l = l.slice().sort((a,b)=>fRank(a)-fRank(b));
+  const noImg = r => r.img ? 0 : 1; // retter uden foto vises sidst
+  if (listMode==='s' && !query) l = l.slice().sort((a,b)=>noImg(a)-noImg(b) || kRank(a)-kRank(b));
+  else if (!query) l = l.slice().sort((a,b)=>noImg(a)-noImg(b) || fRank(a)-fRank(b));
   active.forEach(k => { l = l.filter(FILTERS[k][1]); });
   l = l.filter(matchesQuery);
   const hidden = active.has('fav') ? 0 : l.filter(r=>!fits(r)).length;

@@ -101,6 +101,7 @@
   window.dishArt = function(r, opts){
     opts = opts||{};
     if (r.img) return `<img src="${r.img}" alt="Foto af ${r.n.replace(/"/g,'')}" loading="lazy" decoding="async" class="dishImg">`;
+    if (!opts.drawing) return `<div class="imgSoon" role="img" aria-label="Billede på vej"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5A2.5 2.5 0 0 1 6.5 6h1.6l1.4-2h5l1.4 2h1.6A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5z"/><circle cx="12" cy="12.5" r="3.5"/></svg><span>Billede på vej</span></div>`;
     const id = 'a'+(uid++);
     const [style, cols] = (r.look||'plate:#c9853f,#f2e4bf,#5c9a46').split(':');
     const c = cols.split(',');
