@@ -220,16 +220,6 @@ window.FN_IMG = {
 "src": "https://commons.wikimedia.org/w/index.php?curid=6418513",
 "mod": true
 },
-"groenlangkaal": {
-"f": "billeder/groenlangkaal.jpg",
-"id": "cf3a2d7c-1f3a-46fd-93c0-2ef09439735e",
-"title": "20150823-AMS-LSC-0001",
-"by": "USDAgov",
-"lic": "Public Domain 1.0",
-"licUrl": "https://creativecommons.org/publicdomain/mark/1.0/",
-"src": "https://www.flickr.com/photos/41284017@N08/20961513379",
-"mod": true
-},
 "benloese-fugle": {
 "f": "billeder/benloese-fugle.jpg",
 "id": "9e44e949-9a02-4ec9-95f6-7af9d888ce1f",
@@ -308,16 +298,6 @@ window.FN_IMG = {
 "lic": "CC BY 3.0",
 "licUrl": "https://creativecommons.org/licenses/by/3.0/",
 "src": "https://commons.wikimedia.org/w/index.php?curid=62683804",
-"mod": true
-},
-"aebleflaesk": {
-"f": "billeder/aebleflaesk.jpg",
-"id": "5a264562-5d03-44c5-aa5d-3fd4951252c2",
-"title": "Gelderman Farms pork belly with crackling, celeriac pomme puree, ambrosia apple, braised cabbage @foragevancouver, highly recommended! 2013-01-21 forage",
-"by": "roland",
-"lic": "CC BY 2.0",
-"licUrl": "https://creativecommons.org/licenses/by/2.0/",
-"src": "https://www.flickr.com/photos/35034347371@N01/8403648101",
 "mod": true
 },
 "kartoffelsuppe": {
@@ -672,12 +652,12 @@ window.FN_IMG = {
 },
 "cannelloni": {
 "f": "billeder/cannelloni.jpg",
-"id": "899ba6d4-eb3d-4fa5-bed1-30e7f660e65e",
-"title": "Roasted squash, spinach and tofu ricotta cannelloni",
-"by": "chordmonkey",
+"id": "5ecd88c4-2f4a-491f-a6a2-872b9fc19465",
+"title": "Cannelloni ready to eat (504724484)",
+"by": "Francis Bijl from Groningen, Netherlands",
 "lic": "CC BY 2.0",
 "licUrl": "https://creativecommons.org/licenses/by/2.0/",
-"src": "https://www.flickr.com/photos/34046467@N06/3169016302",
+"src": "https://commons.wikimedia.org/w/index.php?curid=87528504",
 "mod": true
 },
 "pita-kylling": {
@@ -1282,12 +1262,12 @@ window.FN_IMG = {
 },
 "g-shakshuka": {
 "f": "billeder/g-shakshuka.jpg",
-"id": "4c827046-67ed-45e8-88f6-a0dd0f725b45",
-"title": "Shakshuka",
-"by": "adactio",
-"lic": "CC BY 2.0",
-"licUrl": "https://creativecommons.org/licenses/by/2.0/",
-"src": "https://www.flickr.com/photos/74105777@N00/12149680454",
+"id": "9a94a62e-9279-4b26-b5a1-f69d3ef6f826",
+"title": "Shakshuka (16161801202)",
+"by": "transcendancing",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=110390197",
 "mod": true
 },
 "g-saag-paneer": {
@@ -1482,12 +1462,12 @@ window.FN_IMG = {
 },
 "s-cobb": {
 "f": "billeder/s-cobb.jpg",
-"id": "52677cd1-89e6-4bc6-ba3e-495c3f336681",
-"title": "Tonights Cobb Salad",
-"by": "wickenden",
+"id": "52c49c2e-f44c-4890-baea-72c2b40d279c",
+"title": "Cobb salad, 21 July 2008",
+"by": "Marilyn C. Cole",
 "lic": "CC BY-SA 2.0",
 "licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
-"src": "https://www.flickr.com/photos/26667277@N00/394866021",
+"src": "https://commons.wikimedia.org/w/index.php?curid=56496074",
 "mod": true
 },
 "s-chefsalat": {
@@ -1558,16 +1538,6 @@ window.FN_IMG = {
 "lic": "CC BY-SA 3.0",
 "licUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
 "src": "https://commons.wikimedia.org/w/index.php?curid=6845603",
-"mod": true
-},
-"s-makrelsalat": {
-"f": "billeder/s-makrelsalat.jpg",
-"id": "1fd592b6-2c52-4a35-a0cc-df08d312bf7c",
-"title": "Rugbrød med makrel i tomat",
-"by": "cyclonebill",
-"lic": "CC BY-SA 2.0",
-"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
-"src": "https://www.flickr.com/photos/23178876@N03/2223507450",
 "mod": true
 },
 "s-wedge": {
@@ -1652,12 +1622,12 @@ window.FN_IMG = {
 },
 "i-dal-makhani": {
 "f": "billeder/i-dal-makhani.jpg",
-"id": "338f9303-655c-4c49-8cca-6bd51259af20",
-"title": "Creamy Lentils (Dal Makhani) (2239000538)",
-"by": "rovingI",
-"lic": "CC BY 2.0",
-"licUrl": "https://creativecommons.org/licenses/by/2.0/",
-"src": "https://commons.wikimedia.org/w/index.php?curid=87474978",
+"id": "44add39d-4cf4-4228-9c8f-0e7177b9d76d",
+"title": "Dal Makhani Veg Starter Combo (32124200398)",
+"by": "Gaurav Nemade",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=110389422",
 "mod": true
 },
 "i-keema": {
@@ -1748,6 +1718,56 @@ window.FN_IMG = {
 "lic": "CC0 1.0",
 "licUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en/",
 "src": "https://commons.wikimedia.org/w/index.php?curid=113016656",
+"mod": true
+},
+"kalvefrikasse": {
+"f": "billeder/kalvefrikasse.jpg",
+"id": "95f1b725-7a31-4eff-8668-72d34e7ed0a2",
+"title": "Blanquette de veau à l'ancienne 04",
+"by": "Arnaud 25",
+"lic": "CC BY-SA 4.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=94732985",
+"mod": true
+},
+"kold-kartoffelsalat": {
+"f": "billeder/kold-kartoffelsalat.jpg",
+"id": "86af1968-eadb-4bc0-8ed4-df2d7254000e",
+"title": "Shanghai potato salad",
+"by": "Galaxyharrylion",
+"lic": "CC BY-SA 3.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=30976669",
+"mod": true
+},
+"laksefrikadeller-asiatisk": {
+"f": "billeder/laksefrikadeller-asiatisk.jpg",
+"id": "74c564f3-e9e9-43c7-a9ef-33edd4200bcd",
+"title": "Thai Fish Cakes - Poppy Thai",
+"by": "avlxyz",
+"lic": "CC BY-SA 2.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=164459209",
+"mod": true
+},
+"laksesalat": {
+"f": "billeder/laksesalat.jpg",
+"id": "0558383b-1b68-4c33-816d-60a639822bf6",
+"title": "File:Copper River sockeye smoked salmon mit salat und crumpet 07.04.2012 20-30-53.jpg",
+"by": "Dirk Ingo Franke",
+"lic": "CC BY-SA 3.0",
+"licUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=19233638",
+"mod": true
+},
+"s-olivier": {
+"f": "billeder/s-olivier.jpg",
+"id": "c81c7ea0-69e4-43b0-bf99-4b8913001b23",
+"title": "Olivye",
+"by": "UzbekistanWikiEditor",
+"lic": "CC BY 4.0",
+"licUrl": "https://creativecommons.org/licenses/by/4.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=148549004",
 "mod": true
 }
 };
