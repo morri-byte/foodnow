@@ -4,8 +4,8 @@ import json, os, io, re, time, urllib.request, urllib.parse
 from PIL import Image, ImageOps
 UA = "FoodNowImageFetcher/1.0 (https://github.com/morri-byte/foodnow)"
 HERE = os.path.dirname(__file__); ROOT = os.path.dirname(HERE)
-cand = json.load(open(os.path.join(HERE, "candidates.json")))
-sel = json.load(open(os.path.join(HERE, "selected.json")))
+cand = json.load(open(os.path.join(HERE, os.environ.get("CANDS","candidates.json"))))
+sel = json.load(open(os.path.join(HERE, os.environ.get("SEL","selected.json"))))
 OUT = os.path.join(ROOT, "www", "billeder"); os.makedirs(OUT, exist_ok=True)
 JS = os.path.join(ROOT, "www", "data", "billeder.js")
 meta = {}

@@ -2,9 +2,9 @@
 import json, time, urllib.request, urllib.parse, os
 UA = "FoodNowImageFetcher/1.0 (https://github.com/morri-byte/foodnow)"
 HERE = os.path.dirname(__file__)
-Q = json.load(open(os.path.join(HERE, "requeries.json")))
+Q = json.load(open(os.path.join(HERE, os.environ.get("QFILE","requeries.json"))))
 old = json.load(open(os.path.join(HERE, "candidates.json")))
-OUT = os.path.join(HERE, "candidates2.json")
+OUT = os.path.join(HERE, os.environ.get("OUTFILE","candidates2.json"))
 cand = json.load(open(OUT)) if os.path.exists(OUT) else {}
 def search(q, page=1):
     url = "https://api.openverse.org/v1/images/?" + urllib.parse.urlencode({"q": q, "license_type": "commercial", "source": "wikimedia,flickr", **({} if os.environ.get("RELAX") else {"size":"large"}), "page_size": 20, "page": page, "mature": "false"})
