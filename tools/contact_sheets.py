@@ -11,12 +11,19 @@ font = ImageFont.load_default()
 def thumb(c):
     p = os.path.join(TH, c["id"] + ".jpg")
     if os.path.exists(p): return Image.open(p)
-    for url in (c.get("thumbnail"), c["url"]):
+    import re
+    m = re.match(r"https://upload\.wikimedia\.org/wikipedia/commons/(\w)/(\w\w)/(.+)$", c["url"])
+    urls = [f"https://upload.wikimedia.org/wikipedia/commons/thumb/{m.group(1)}/{m.group(2)}/{m.group(3)}/330px-{m.group(3)}"] if m else [c["url"].replace("_b.jpg","_n.jpg"), c["url"]]
+    for url in urls:
         if not url: continue
-        try:
-            data = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=30).read()
-            im = Image.open(io.BytesIO(data)).convert("RGB"); im.thumbnail((360, 270)); im.save(p, quality=80); time.sleep(1); return im
-        except Exception as e: print("  thumb-fejl", c["id"][:8], e, flush=True); time.sleep(2)
+        for attempt in range(4):
+            try:
+                data = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=30).read()
+                im = Image.open(io.BytesIO(data)).convert("RGB"); im.thumbnail((360, 270)); im.save(p, quality=80); time.sleep(2.5); return im
+            except urllib.error.HTTPError as e:
+                if e.code == 429: time.sleep(15 * (attempt + 1)); continue
+                print("  thumb-fejl", c["id"][:8], e, flush=True); break
+            except Exception as e: print("  thumb-fejl", c["id"][:8], e, flush=True); time.sleep(3); break
     return None
 keys = ids or list(cand.keys())
 for b in range(0, len(keys), 10):
