@@ -5,7 +5,7 @@ UA = "FoodNowImageFetcher/1.0 (https://github.com/morri-byte/foodnow)"
 HERE = os.path.dirname(__file__)
 OUTDIR = sys.argv[1]
 ids = sys.argv[2].split(",") if len(sys.argv) > 2 else None
-cand = json.load(open(os.path.join(HERE, "candidates.json")))
+cand = json.load(open(os.path.join(HERE, os.environ.get("CANDS","candidates.json"))))
 TH = os.path.join(OUTDIR, "thumbs"); os.makedirs(TH, exist_ok=True)
 font = ImageFont.load_default()
 def thumb(c):
@@ -21,12 +21,12 @@ def thumb(c):
 keys = ids or list(cand.keys())
 for b in range(0, len(keys), 10):
     batch = keys[b:b+10]
-    W, H = 8 * 182 + 150, len(batch) * 140
+    N = int(os.environ.get("NCOL","8")); W, H = N * 182 + 150, len(batch) * 140
     sheet = Image.new("RGB", (W, H), "white"); d = ImageDraw.Draw(sheet)
     for row, rid in enumerate(batch):
         y = row * 140
         d.text((4, y + 60), rid[:22], fill="black", font=font)
-        for col, c in enumerate(cand.get(rid, [])[:8]):
+        for col, c in enumerate(cand.get(rid, [])[:N]):
             im = thumb(c)
             if not im: continue
             im = im.copy(); im.thumbnail((178, 134))
