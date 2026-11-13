@@ -1769,5 +1769,15 @@ window.FN_IMG = {
 "licUrl": "https://creativecommons.org/licenses/by/4.0/",
 "src": "https://commons.wikimedia.org/w/index.php?curid=148549004",
 "mod": true
+},
+"tarteletter": {
+"f": "billeder/tarteletter.jpg",
+"id": "cf55d6f4-2b19-4125-b5be-44e1cac68b7c",
+"title": "Seafood Vol-au-vent",
+"by": "Richard N Horne",
+"lic": "CC BY 4.0",
+"licUrl": "https://creativecommons.org/licenses/by/4.0/",
+"src": "https://commons.wikimedia.org/w/index.php?curid=163931930",
+"mod": true
 }
 };
